@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
-using Vedo.Kezelők;
-using Vedo.Vedo_Adat;
-using MyE = Vedo.Module_Excel;
 using MyF = Függvénygyűjtemény;
 
-namespace Vedo.Ablakok
+namespace VédőEszköz
 {
     public partial class Ablak_Szervezet : Form
     {
@@ -65,7 +62,7 @@ namespace Vedo.Ablakok
                     return;
 
                 fájlexc = fájlexc.Substring(0, fájlexc.Length);
-                MyE.DataGridViewToExcel(fájlexc, Tábla);
+                //       MyE.DataGridViewToExcel(fájlexc, Tábla);
                 MessageBox.Show("Elkészült az Excel tábla: " + fájlexc, "Tájékoztatás", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 MyF.Megnyitás(fájlexc);
             }
@@ -86,14 +83,14 @@ namespace Vedo.Ablakok
             {
                 Adatok = KézSzervezet.Lista_Adatok();
 
-                List<OszlopDefinició> oszlopok = new List<OszlopDefinició>
-                {
-                    new OszlopDefinició("Id", "Azonosító", 120, "", DataGridViewContentAlignment.MiddleLeft),
-                    new OszlopDefinició("Szervezet", "Szervezet Neve", 340),
-                    new OszlopDefinició("Státus", "Törölt", 120, "", DataGridViewContentAlignment.MiddleCenter)
-                };
+                //List<OszlopDefinició> oszlopok = new List<OszlopDefinició>
+                //{
+                //    new OszlopDefinició("Id", "Azonosító", 120, "", DataGridViewContentAlignment.MiddleLeft),
+                //    new OszlopDefinició("Szervezet", "Szervezet Neve", 340),
+                //    new OszlopDefinició("Státus", "Törölt", 120, "", DataGridViewContentAlignment.MiddleCenter)
+                //};
 
-                TáblaKezelő.Feltöltés(Tábla, KötésiOsztály, Adatok, oszlopok);
+                //TáblaKezelő.Feltöltés(Tábla, KötésiOsztály, Adatok, oszlopok);
 
                 TáblaSzínezés();
 

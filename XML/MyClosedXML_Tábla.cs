@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 using DataTable = System.Data.DataTable;
 using MyF = Függvénygyűjtemény;
@@ -26,48 +25,48 @@ namespace VédőEszköz
         {
             try
             {
-                byte[] excel = Tábla.ToExcel(a => a.SheetName(munkalapnév));
-                File.WriteAllBytes(fájl, excel);
+                //byte[] excel = Tábla.ToExcel(a => a.SheetName(munkalapnév));
+                //File.WriteAllBytes(fájl, excel);
 
-                ///Megnyitjuk az Excel Formázásra
-                ExcelMegnyitás(fájl);
+                /////Megnyitjuk az Excel Formázásra
+                //ExcelMegnyitás(fájl);
 
-                ////Utolsó oszlop és sor adatok
-                oszlop = Tábla.Columns.Count;
-                sor = Tábla.Rows.Count;
+                //////Utolsó oszlop és sor adatok
+                //oszlop = Tábla.Columns.Count;
+                //sor = Tábla.Rows.Count;
 
-                Háttérszín(munkalapnév, $"A1:{MyF.Oszlopnév(oszlop)}1", Color.Yellow); //Sárga háttér
-                Beállítás_Betű BeBetű = new Beállítás_Betű
-                {
-                    Vastag = true
-                };
-                Betű(munkalapnév, $"A1:{MyF.Oszlopnév(oszlop)}1", BeBetű);
+                //Háttérszín(munkalapnév, $"A1:{MyF.Oszlopnév(oszlop)}1", Color.Yellow); //Sárga háttér
+                //Beállítás_Betű BeBetű = new Beállítás_Betű
+                //{
+                //    Vastag = true
+                //};
+                //Betű(munkalapnév, $"A1:{MyF.Oszlopnév(oszlop)}1", BeBetű);
 
 
-                Rácsoz(munkalapnév, $"A1:{MyF.Oszlopnév(oszlop)}{sor + 1}"); // rácsozás
-                Oszlopszélesség(munkalapnév, $"A:{MyF.Oszlopnév(oszlop)}");     //Automata Oszlop szélesség beállítás
+                //Rácsoz(munkalapnév, $"A1:{MyF.Oszlopnév(oszlop)}{sor + 1}"); // rácsozás
+                //Oszlopszélesség(munkalapnév, $"A:{MyF.Oszlopnév(oszlop)}");     //Automata Oszlop szélesség beállítás
 
-                if (TáblaGrid != null) Színezés(munkalapnév, TáblaGrid);
+                //if (TáblaGrid != null) Színezés(munkalapnév, TáblaGrid);
 
-                Tábla_Rögzítés(munkalapnév, 1);  //Rögzítjük a fejlécet
-                Szűrés(munkalapnév, "A", MyF.Oszlopnév(oszlop), sor + 1);    //szűrést felteszük
+                //Tábla_Rögzítés(munkalapnév, 1);  //Rögzítjük a fejlécet
+                //Szűrés(munkalapnév, "A", MyF.Oszlopnév(oszlop), sor + 1);    //szűrést felteszük
 
-                //Nyomtatási terület kijelülése
-                Beállítás_Nyomtatás NyBeállítás = new Beállítás_Nyomtatás
-                {
-                    NyomtatásiTerület = $"A1:{MyF.Oszlopnév(oszlop)}{sor + 1}",
-                    Munkalap = munkalapnév,
-                    IsmétlődőSorok = "$1:$1",
-                    Álló = false,
-                    LapSzéles = 1,
-                    LáblécKözép = "&P/&N",
-                    FejlécKözép = Program.PostásNév?.Trim() ?? "",
-                    FejlécJobb = DateTime.Now.ToString("yyyy.MM.dd HH:mm")
-                };
-                NyomtatásiTerület_részletes(munkalapnév, NyBeállítás);
+                ////Nyomtatási terület kijelülése
+                //Beállítás_Nyomtatás NyBeállítás = new Beállítás_Nyomtatás
+                //{
+                //    NyomtatásiTerület = $"A1:{MyF.Oszlopnév(oszlop)}{sor + 1}",
+                //    Munkalap = munkalapnév,
+                //    IsmétlődőSorok = "$1:$1",
+                //    Álló = false,
+                //    LapSzéles = 1,
+                //    LáblécKözép = "&P/&N",
+                //    FejlécKözép = Program.PostásNév?.Trim() ?? "",
+                //    FejlécJobb = DateTime.Now.ToString("yyyy.MM.dd HH:mm")
+                //};
+                //NyomtatásiTerület_részletes(munkalapnév, NyBeállítás);
 
-                ExcelMentés(fájl);
-                ExcelBezárás();
+                //ExcelMentés(fájl);
+                //ExcelBezárás();
             }
             catch (Exception ex)
             {

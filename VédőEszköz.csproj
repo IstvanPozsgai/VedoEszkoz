@@ -57,10 +57,6 @@
     <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Office.Interop.Excel, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Office.Interop.Excel.16.0.18925.20022\lib\net40\Microsoft.Office.Interop.Excel.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
     <Reference Include="Microsoft.Office.Interop.Outlook, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Office.Interop.Outlook.15.0.4797.1004\lib\net20\Microsoft.Office.Interop.Outlook.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -115,11 +111,11 @@
     <Compile Include="Ablakok\1_Beállítás\Ablak_Formok.Designer.cs">
       <DependentUpon>Ablak_Formok.cs</DependentUpon>
     </Compile>
-    <Compile Include="Ablakok\1_Beállítás\Ablak_Gombok.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Ablakok\1_Beállítás\Ablak_Hibanaplo.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ablakok\1_Beállítás\Ablak_Hibanaplo.Designer.cs">
+      <DependentUpon>Ablak_Hibanaplo.cs</DependentUpon>
     </Compile>
     <Compile Include="Ablakok\1_Beállítás\Ablak_JogKiosztás.cs">
       <SubType>Form</SubType>
@@ -127,11 +123,11 @@
     <Compile Include="Ablakok\1_Beállítás\Ablak_JogKiosztás.Designer.cs">
       <DependentUpon>Ablak_JogKiosztás.cs</DependentUpon>
     </Compile>
-    <Compile Include="Ablakok\2_Alap_Adatok\Ablak_Anyagok.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Ablakok\2_Alap_Adatok\Ablak_Szervezet.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ablakok\2_Alap_Adatok\Ablak_Szervezet.Designer.cs">
+      <DependentUpon>Ablak_Szervezet.cs</DependentUpon>
     </Compile>
     <Compile Include="Ablakok\2_Alap_Adatok\Ablak_Szervezet_Kezelo.cs" />
     <Compile Include="Ablakok\2_Alap_Adatok\Szervezet_Szerkesztő.cs" />
@@ -147,6 +143,12 @@
     <Compile Include="Ablakok\Ablak_Főoldal.designer.cs">
       <DependentUpon>Ablak_Főoldal.cs</DependentUpon>
     </Compile>
+    <Compile Include="Ablakok\Ablak_Gombok.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ablakok\Ablak_Gombok.Designer.cs">
+      <DependentUpon>Ablak_Gombok.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ablakok\Ablak_Jelszó_Változtatás.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -154,15 +156,20 @@
       <DependentUpon>Ablak_Jelszó_Változtatás.cs</DependentUpon>
     </Compile>
     <Compile Include="Adatbázis\Adatbázis.cs" />
+    <Compile Include="Adatbázis\Adatbázis_Behajtási.cs" />
     <Compile Include="Adatbázis\Adatbázis_Bejelentkezés.cs" />
     <Compile Include="Adatbázis\Adatbázis_Excel_Beolvasás.cs" />
     <Compile Include="Adatbázis\AdatBázis_kezelés.cs" />
+    <Compile Include="Adatbázis\Adatbázis_Szervezet.cs" />
+    <Compile Include="Adat\Adat_Behajtási.cs" />
+    <Compile Include="Adat\Adat_Belépés.cs" />
     <Compile Include="Adat\Adat_Belépés_Verzió.cs" />
     <Compile Include="Adat\Adat_Excel_Beolvasás.cs" />
     <Compile Include="Adat\Adat_Gombok.cs" />
     <Compile Include="Adat\Adat_Jogosultságok.cs" />
     <Compile Include="Adat\Adat_Kiegészítő_Könyvtár.cs" />
     <Compile Include="Adat\Adat_Oldalak.cs" />
+    <Compile Include="Adat\Adat_Szervezet.cs" />
     <Compile Include="Adat\Adat_Users.cs" />
     <Compile Include="Adat\Beállítás_Betű.cs" />
     <Compile Include="Adat\Beállítás_CellaSzöveg.cs" />
@@ -170,9 +177,6 @@
     <Compile Include="Adat\Beállítás_Ferde.cs" />
     <Compile Include="Adat\Beállítás_Kimutatás.cs" />
     <Compile Include="Adat\Beállítás_Nyomtatás.cs" />
-    <Compile Include="Excel\Excel.cs" />
-    <Compile Include="Excel\Excel_Nyomtatási.cs" />
-    <Compile Include="Excel\Excel_Sor_Oszlop.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -180,14 +184,17 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Függvények\AblakokGombok.cs" />
+    <Compile Include="Függvények\Enumok.cs" />
     <Compile Include="Függvények\Fv_Dátum.cs" />
     <Compile Include="Függvények\Fv_szöveg.cs" />
     <Compile Include="Függvények\Fájl.cs" />
     <Compile Include="Függvények\Függvénygyűjtemény.cs" />
+    <Compile Include="Függvények\GombLathatosagKezelo.cs" />
     <Compile Include="Függvények\Hely_Ellenőr.cs" />
     <Compile Include="Függvények\Jelszó.cs" />
     <Compile Include="Függvények\Kezelő_Értékellenőrzés.cs" />
     <Compile Include="Függvények\KönyvtárEllenőr.cs" />
+    <Compile Include="Függvények\OpenFileDialogPI.cs" />
     <Compile Include="Függvények\Oszlopneve.cs" />
     <Compile Include="Függvények\ScreenshotHelper.cs" />
     <Compile Include="Hibakezelés\Hibakezelés.cs" />
@@ -202,6 +209,9 @@
     <Compile Include="Input_Forms\InputTextbox.cs" />
     <Compile Include="Input_Forms\InputTime.cs" />
     <Compile Include="Kezelők\Kezelők_Jogosultságok.cs" />
+    <Compile Include="Kezelők\Kezelő_Behajtás_Dolgozótábla.cs" />
+    <Compile Include="Kezelők\Kezelő_Belépés_Jogosultságtábla.cs" />
+    <Compile Include="Kezelők\Kezelő_Belépés_MindenMásol.cs" />
     <Compile Include="Kezelők\Kezelő_Belépés_Verzió.cs" />
     <Compile Include="Kezelők\Kezelő_Excel_Beolvasás.cs" />
     <Compile Include="Kezelők\Kezelő_Gombok.cs" />
@@ -209,6 +219,7 @@
     <Compile Include="Kezelők\Kezelő_Kiegészítő_Könyvtár.cs" />
     <Compile Include="Kezelők\Kezelő_Kép.cs" />
     <Compile Include="Kezelők\Kezelő_Oldalok.cs" />
+    <Compile Include="Kezelők\Kezelő_Szervezet.cs" />
     <Compile Include="Kezelők\Kezelő_Users.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -232,14 +243,23 @@
     <EmbeddedResource Include="Ablakok\1_Beállítás\Ablak_Formok.resx">
       <DependentUpon>Ablak_Formok.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Ablakok\1_Beállítás\Ablak_Hibanaplo.resx">
+      <DependentUpon>Ablak_Hibanaplo.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Ablakok\1_Beállítás\Ablak_JogKiosztás.resx">
       <DependentUpon>Ablak_JogKiosztás.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ablakok\2_Alap_Adatok\Ablak_Szervezet.resx">
+      <DependentUpon>Ablak_Szervezet.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ablakok\Ablak_Bejelentkezés.resx">
       <DependentUpon>Ablak_Bejelentkezés.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ablakok\Ablak_Főoldal.resx">
       <DependentUpon>Ablak_Főoldal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ablakok\Ablak_Gombok.resx">
+      <DependentUpon>Ablak_Gombok.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ablakok\Ablak_Jelszó_Változtatás.resx">
       <DependentUpon>Ablak_Jelszó_Változtatás.cs</DependentUpon>
@@ -268,12 +288,48 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <COMReference Include="ADODB">
+      <Guid>{B691E011-1797-432E-907A-4D8C69339129}</Guid>
+      <VersionMajor>6</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="ADOX">
+      <Guid>{00000600-0000-0010-8000-00AA006D2EA4}</Guid>
+      <VersionMajor>6</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
     <COMReference Include="IWshRuntimeLibrary">
       <Guid>{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B}</Guid>
       <VersionMajor>1</VersionMajor>
       <VersionMinor>0</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>

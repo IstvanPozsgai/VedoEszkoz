@@ -1,4 +1,4 @@
-﻿namespace Vedo
+﻿namespace VédőEszköz
 {
     partial class Ablak_Felhasználó
     {
@@ -211,8 +211,8 @@
             // 
             this.Tábla.AllowUserToAddRows = false;
             this.Tábla.AllowUserToDeleteRows = false;
-            this.Tábla.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.Tábla.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Tábla.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.Tábla.FilterAndSortEnabled = true;

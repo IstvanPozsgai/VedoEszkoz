@@ -5,26 +5,26 @@ using System.Windows.Forms;
 
 using MyA = Adatbázis;
 
-
 namespace VédőEszköz
 {
-    public class Kezelő_Kiegészítő_Könyvtár
+    public class Kezelő_Belépés_Jogosultságtábla
     {
-        readonly string hely = $@"{Application.StartupPath}\VédőAdatok\kiegészítő2.mdb".KönyvSzerk();
-        readonly string jelszó = "Mocó";
-        readonly string táblanév = "könyvtár";
+        readonly string jelszó = "forgalmiutasítás";
+        string hely;
 
-        public Kezelő_Kiegészítő_Könyvtár()
+        private void FájlBeállítás(string Telephely)
         {
-            //nincs elkészítve
-            // if (!File.Exists(hely)) Adatbázis_Létrehozás.Behajtási_Adatok_Napló(hely.KönyvSzerk());
+            hely = $@"{Application.StartupPath}\{Telephely}\Adatok\Belépés.mdb";
+            //Nincs kidolgozva
+            //if (!File.Exists(hely)) Adatbázis_Létrehozás.Behajtási_Adatok_Napló(hely.KönyvSzerk());
         }
 
-        public List<Adat_Kiegészítő_Könyvtár> Lista_Adatok()
+        public List<Adat_Belépés_Jogosultságtábla> Lista_Adatok(string Telephely)
         {
-            string szöveg = $"SELECT * FROM {táblanév} ORDER BY id";
-            Adat_Kiegészítő_Könyvtár Adat;
-            List<Adat_Kiegészítő_Könyvtár> Adatok = new List<Adat_Kiegészítő_Könyvtár>();
+            FájlBeállítás(Telephely);
+            string szöveg = $"SELECT * FROM Jogosultságtábla order by név";
+            List<Adat_Belépés_Jogosultságtábla> Adatok = new List<Adat_Belépés_Jogosultságtábla>();
+            Adat_Belépés_Jogosultságtábla Adat;
 
             string kapcsolatiszöveg = $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{hely}'; Jet Oledb:Database Password={jelszó}";
             using (OleDbConnection Kapcsolat = new OleDbConnection(kapcsolatiszöveg))
@@ -38,16 +38,11 @@ namespace VédőEszköz
                         {
                             while (rekord.Read())
                             {
-                                Adat = new Adat_Kiegészítő_Könyvtár(
-                                           rekord["id"].ToÉrt_Int(),
-                                           rekord["név"].ToStrTrim(),
-                                           rekord["vezér1"].ToÉrt_Bool(),
-                                           rekord["Csoport1"].ToÉrt_Int(),
-                                           rekord["Csoport2"].ToÉrt_Int(),
-                                           rekord["vezér2"].ToÉrt_Bool(),
-                                           rekord["sorrend1"].ToÉrt_Int(),
-                                           rekord["sorrend2"].ToÉrt_Int()
-                                           );
+                                Adat = new Adat_Belépés_Jogosultságtábla(
+                                    rekord["név"].ToStrTrim(),
+                                    rekord["jogkörúj1"].ToStrTrim(),
+                                    rekord["jogkörÚj2"].ToStrTrim()
+                                    );
                                 Adatok.Add(Adat);
                             }
                         }
@@ -55,21 +50,18 @@ namespace VédőEszköz
                 }
             }
             return Adatok;
+
         }
 
-        public void Rögzítés(Adat_Kiegészítő_Könyvtár Adat)
+        public void Rögzítés(string Telephely, Adat_Belépés_Jogosultságtábla Adat)
         {
             try
             {
-                string szöveg = $"INSERT INTO {táblanév} ";
-                szöveg += " ( név, csoport1, csoport2, sorrend1, sorrend2, vezér1, vezér2 ) VALUES ";
-                szöveg += $"('{Adat.Név}', ";
-                szöveg += $"{Adat.Csoport1}, ";
-                szöveg += $"{Adat.Csoport2}, ";
-                szöveg += $"{Adat.Sorrend1}, ";
-                szöveg += $"{Adat.Sorrend2}, ";
-                szöveg += $"{Adat.Vezér1}, ";
-                szöveg += $"{Adat.Vezér2}) ";
+                FájlBeállítás(Telephely);
+                string szöveg = "INSERT INTO Jogosultságtábla (név, Jogkörúj1, Jogkörúj2) ";
+                szöveg += $" Values('{Adat.Név}', ";
+                szöveg += $"'{Adat.Jogkörúj1}', ";
+                szöveg += $"'{Adat.Jogkörúj2}' )";
                 MyA.ABMódosítás(hely, jelszó, szöveg);
             }
             catch (HibásBevittAdat ex)
@@ -81,21 +73,17 @@ namespace VédőEszköz
                 HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
                 MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
-        public void Módosítás(Adat_Kiegészítő_Könyvtár Adat)
+        public void Módosítás(string Telephely, Adat_Belépés_Jogosultságtábla Adat)
         {
             try
             {
-                string szöveg = $"UPDATE {táblanév} SET ";
-                szöveg += $" név='{Adat.Név}', ";
-                szöveg += $" csoport1={Adat.Csoport1}, ";
-                szöveg += $" csoport2={Adat.Csoport2}, ";
-                szöveg += $" sorrend1={Adat.Sorrend1}, ";
-                szöveg += $" sorrend2={Adat.Sorrend2}, ";
-                szöveg += $" vezér1={Adat.Vezér1}, ";
-                szöveg += $" vezér2={Adat.Vezér2} ";
-                szöveg += $" WHERE id={Adat.ID}";
+                FájlBeállítás(Telephely);
+                string szöveg = $"Update Jogosultságtábla set ";
+                szöveg += $"jogkörúj1='{Adat.Jogkörúj1}' ";
+                szöveg += $"WHERE név= '{Adat.Név}'";
                 MyA.ABMódosítás(hely, jelszó, szöveg);
             }
             catch (HibásBevittAdat ex)
@@ -107,13 +95,15 @@ namespace VédőEszköz
                 HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
                 MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
-        public void Törlés(int Sorszám)
+        public void Törlés(string Telephely, Adat_Belépés_Jogosultságtábla Adat)
         {
             try
             {
-                string szöveg = $"Delete FROM {táblanév} where id={Sorszám}";
+                FájlBeállítás(Telephely);
+                string szöveg = $"DELETE * From Jogosultságtábla where név='{Adat.Név}'";
                 MyA.ABtörlés(hely, jelszó, szöveg);
             }
             catch (HibásBevittAdat ex)

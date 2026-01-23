@@ -6,24 +6,28 @@ using System.Linq;
 using System.Windows.Forms;
 using MyA = Adatbázis;
 
+
+
 namespace VédőEszköz
 {
-    public class Kezelő_Users
+    public class Kezelő_Szervezet
     {
-        readonly string hely = $@"{Application.StartupPath}\VédőAdatok\Új_Belépés.mdb";
-        readonly string jelszó = "ForgalmiUtasítás";
-        readonly string táblanév = "Tábla_Users";
+        readonly string hely = $@"{Application.StartupPath}\Adatok\Alapadatok.mdb";
+        readonly string jelszó = "csavarhúzó";
+        readonly string táblanév = "Tábla_Szervezet";
 
-        public Kezelő_Users()
+        public Kezelő_Szervezet()
         {
-            if (!File.Exists(hely)) Adatbázis_Létrehozás.Adatbázis_Users(hely.KönyvSzerk());
-            if (!AdatBázis_kezelés.TáblaEllenőrzés(hely, jelszó, táblanév)) Adatbázis_Létrehozás.Adatbázis_Users(hely);
+            if (!File.Exists(hely)) Adatbázis_Létrehozás.Szervezet(hely.KönyvSzerk());
+            if (!AdatBázis_kezelés.TáblaEllenőrzés(hely, jelszó, táblanév)) Adatbázis_Létrehozás.Szervezet(hely);
         }
 
-        public List<Adat_Users> Lista_Adatok()
+        public List<Adat_Szervezet> Lista_Adatok()
         {
-            List<Adat_Users> Adatok = new List<Adat_Users>();
-            string szöveg = $"SELECT * FROM {táblanév}";
+            string szöveg = $"SELECT * FROM {táblanév} ORDER BY ID";
+            List<Adat_Szervezet> Adatok = new List<Adat_Szervezet>();
+            Adat_Szervezet Adat;
+
             string kapcsolatiszöveg = $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{hely}'; Jet Oledb:Database Password={jelszó}";
 
             using (OleDbConnection Kapcsolat = new OleDbConnection(kapcsolatiszöveg))
@@ -37,21 +41,10 @@ namespace VédőEszköz
                         {
                             while (rekord.Read())
                             {
-                                Adat_Users Adat = new Adat_Users(
-                                        rekord["UserId"].ToÉrt_Int(),
-                                        rekord["UserName"].ToStrTrim(),
-                                        rekord["WinUserName"].ToStrTrim(),
-                                        rekord["Dolgozószám"].ToStrTrim(),
-                                        rekord["Password"].ToStrTrim(),
-                                        rekord["Dátum"].ToÉrt_DaTeTime(),
-                                        rekord["Frissít"].ToÉrt_Bool(),
-                                        rekord["Törölt"].ToÉrt_Bool(),
-                                        rekord["Szervezetek"].ToStrTrim(),
+                                Adat = new Adat_Szervezet(
+                                        rekord["Id"].ToÉrt_Int(),
                                         rekord["Szervezet"].ToStrTrim(),
-                                        rekord["GlobalAdmin"].ToÉrt_Bool(),
-                                        rekord["TelepAdmin"].ToÉrt_Bool()
-
-                                );
+                                        rekord["Státus"].ToÉrt_Bool());
                                 Adatok.Add(Adat);
                             }
                         }
@@ -61,13 +54,16 @@ namespace VédőEszköz
             return Adatok;
         }
 
-        public void Döntés(Adat_Users Adat)
+        public void Döntés(Adat_Szervezet Adat)
         {
             try
             {
-                List<Adat_Users> Adatok = Lista_Adatok();
-                if (!Adatok.Any(a => a.UserId == Adat.UserId))
+                List<Adat_Szervezet> Adatok = Lista_Adatok();
+                if (!Adatok.Any(a => a.Id == Adat.Id))
+                {
+                    if (Adatok.Any(a => a.Szervezet == Adat.Szervezet && a.Státus == false)) throw new HibásBevittAdat("Van már ilyen néven Szervezet létrehozva.");
                     Rögzítés(Adat);
+                }
                 else
                     Módosítás(Adat);
 
@@ -83,16 +79,35 @@ namespace VédőEszköz
             }
         }
 
-        public void Rögzítés(Adat_Users Adat)
+        public void Rögzítés(Adat_Szervezet Adat)
         {
             try
             {
-                string pword = Adat.Password;
-                if (Adat.Password.Trim() == "") pword = "123456";
-                bool frissít = true;
-                string szöveg = $"INSERT INTO {táblanév} (UserName, WinUserName, Dolgozószám, [Password], Dátum, frissít, Törölt, Szervezetek, Szervezet, GlobalAdmin, TelepAdmin) VALUES (";
-                szöveg += $"'{Adat.UserName}', '{Adat.WinUserName}', '{Adat.Dolgozószám}', '{pword}', '{Adat.Dátum:yyyy.MM.dd}', {frissít}, {Adat.Törölt},";
-                szöveg += $" '{Adat.Szervezetek}', '{Adat.Szervezet}',{Adat.GlobalAdmin} ,{Adat.TelepAdmin} )";
+                string szöveg = $"INSERT INTO {táblanév} ( Id, Szervezet, státus) VALUES ";
+                szöveg += $"({Sorszám()},  '{Adat.Szervezet}', {Adat.Státus})";
+                MyA.ABMódosítás(hely, jelszó, szöveg);
+
+            }
+            catch (HibásBevittAdat ex)
+            {
+                MessageBox.Show(ex.Message, "Információ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
+                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public void Módosítás(Adat_Szervezet Adat)
+        {
+            try
+            {
+
+                string szöveg = $"UPDATE {táblanév} SET ";
+                szöveg += $"Szervezet='{Adat.Szervezet}', ";
+                szöveg += $"Státus={Adat.Státus}";
+                szöveg += $" WHERE Id={Adat.Id}";
                 MyA.ABMódosítás(hely, jelszó, szöveg);
             }
             catch (HibásBevittAdat ex)
@@ -106,20 +121,13 @@ namespace VédőEszköz
             }
         }
 
-        public void Módosítás(Adat_Users Adat)
+        private int Sorszám()
         {
+            int válasz = 1;
             try
             {
-                string szöveg = $"UPDATE {táblanév} SET ";
-                szöveg += $"WinUserName ='{Adat.WinUserName}', ";
-                szöveg += $"Dátum ='{Adat.Dátum:yyyy.MM.dd}', ";
-                szöveg += $"Törölt ={Adat.Törölt}, ";
-                szöveg += $"Szervezetek ='{Adat.Szervezetek}', ";
-                szöveg += $"Szervezet ='{Adat.Szervezet}', ";
-                szöveg += $"GlobalAdmin={Adat.GlobalAdmin}, ";
-                szöveg += $"TelepAdmin={Adat.TelepAdmin} ";
-                szöveg += $"WHERE UserId = {Adat.UserId}";
-                MyA.ABMódosítás(hely, jelszó, szöveg);
+                List<Adat_Szervezet> Adatok = Lista_Adatok();
+                if (Adatok.Count > 0) válasz = Adatok.Max(a => a.Id) + 1;
             }
             catch (HibásBevittAdat ex)
             {
@@ -130,28 +138,7 @@ namespace VédőEszköz
                 HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
                 MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        public void MódosításJeszó(Adat_Users Adat)
-        {
-            try
-            {
-                string szöveg = $"UPDATE {táblanév} SET ";
-                szöveg += $"[Password] ='{Adat.Password}', ";
-                szöveg += $"Dátum ='{DateTime.Today:yyyy.MM.dd}', ";
-                szöveg += $"Frissít ={Adat.Frissít} ";
-                szöveg += $"WHERE UserId = {Adat.UserId}";
-                MyA.ABMódosítás(hely, jelszó, szöveg);
-            }
-            catch (HibásBevittAdat ex)
-            {
-                MessageBox.Show(ex.Message, "Információ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            return válasz;
         }
     }
 }

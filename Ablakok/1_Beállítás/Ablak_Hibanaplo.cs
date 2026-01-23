@@ -7,8 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Vedo.Ablakok
+namespace VédőEszköz
 {
+
     public partial class Ablak_Hibanaplo : Form
     {
         Hibanapló_Részletes Ablak;

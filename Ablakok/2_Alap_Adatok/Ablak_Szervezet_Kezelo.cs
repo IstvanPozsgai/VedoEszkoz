@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using InputForms;
+using System;
 using System.Windows.Forms;
-using InputForms;
-using Vedo.Vedo_Adat;
-using Vedo.Kezelők;
 
-namespace Vedo.Ablakok
+
+namespace VédőEszköz
+
 {
     public class Ablak_Szervezet_Kezelo
     {
@@ -19,8 +18,8 @@ namespace Vedo.Ablakok
         public void Kezelés(Adat_Szervezet Adat, Action FrissitesCallback)
         {
             int id = Adat?.Id ?? 0;
-            string nev = Adat?.Szervezet ?? ""; 
-            string rovid = "";  
+            string nev = Adat?.Szervezet ?? "";
+            string rovid = "";
             //Adat?.RovidNev ?? ""; 
 
             string status = (Adat != null && Adat.Státus) ? "Törölt" : "Aktív";
@@ -38,10 +37,10 @@ namespace Vedo.Ablakok
             form.Add("Szervezet", TxtSzervezet)
                 .Add("Rovid", TxtRovidNev)
                 .Add("Status", CmbStatus)
-                .MoveTo(10, 10)       
-                .FieldIgazítás()   
-                .SetButton("Rögzít")  
-                .OnSubmit(() =>       
+                .MoveTo(10, 10)
+                .FieldIgazítás()
+                .SetButton("Rögzít")
+                .OnSubmit(() =>
                 {
                     MentésFolyamat(id, Kezelő, FrissitesCallback);
                 });
@@ -49,7 +48,7 @@ namespace Vedo.Ablakok
             Ablak.Width = form.Width + 40;
             Ablak.Height = form.Height + 80;
             Ablak.Text = (id == 0) ? "Új Szervezet felvitele" : "Szervezet módosítása";
-           //Ablak.Icon = Properties.Resources.ProgramIkon;
+            //Ablak.Icon = Properties.Resources.ProgramIkon;
             Ablak.StartPosition = FormStartPosition.CenterScreen;
             Ablak.FormBorderStyle = FormBorderStyle.FixedDialog;
             Ablak.MaximizeBox = false;

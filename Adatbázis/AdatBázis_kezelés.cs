@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Data.OleDb;
 using System.IO;
+using VédőEszköz;
 
 
 public static partial class AdatBázis_kezelés

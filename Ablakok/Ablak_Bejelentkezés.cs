@@ -5,11 +5,11 @@ using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using Vedo.Vedo_Ablakok;
+
 
 
 using static System.IO.File;
-using MyE = VédőEszköz.Module_Excel;
+using MyF = Függvénygyűjtemény;
 
 namespace VédőEszköz
 {
@@ -44,7 +44,7 @@ namespace VédőEszköz
             try
             {
                 string hely = $@"{Application.StartupPath}\Súgó\VedoLapok\Főoldal.html";
-                MyE.Megnyitás(hely);
+                MyF.Megnyitás(hely);
             }
             catch (HibásBevittAdat ex)
             {

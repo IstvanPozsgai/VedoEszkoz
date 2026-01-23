@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
-using Vedo;
+using VédőEszköz;
 
 public static partial class Függvénygyűjtemény
 {

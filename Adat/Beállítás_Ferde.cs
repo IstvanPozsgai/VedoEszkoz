@@ -1,4 +1,7 @@
-﻿namespace VédőEszköz
+﻿
+using static VédőEszköz.Enumok;
+
+namespace VédőEszköz
 {
     public class Beállítás_Ferde
     {
@@ -15,5 +18,11 @@
         /// Ferde vonal iránya
         /// </summary>
         public bool Jobb { get; set; } = true;
+
+
+        public KeretVastagsag Felső { get; set; } = KeretVastagsag.Alap;
+        public KeretVastagsag Alsó { get; set; } = KeretVastagsag.Alap;
+        public KeretVastagsag BalOldal { get; set; } = KeretVastagsag.Alap;
+        public KeretVastagsag JobbOldal { get; set; } = KeretVastagsag.Alap;
     }
 }

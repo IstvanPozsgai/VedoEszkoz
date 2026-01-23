@@ -5,7 +5,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 
-using MyE = VédőEszköz.Module_Excel;
+using MyF = Függvénygyűjtemény;
 
 
 namespace VédőEszköz
@@ -35,7 +35,7 @@ namespace VédőEszköz
             Üres();
             TáblázatListázás();
             SzervezetFeltöltésChk();
-            //     GombLathatosagKezelo.Beallit(this);
+            GombLathatosagKezelo.Beallit(this);
             Admin();
 
         }
@@ -49,7 +49,7 @@ namespace VédőEszköz
             try
             {
                 string hely = $@"{Application.StartupPath}\Súgó\VillamosLapok\felhasználó.html";
-                MyE.Megnyitás(hely);
+                MyF.Megnyitás(hely);
             }
             catch (HibásBevittAdat ex)
             {
@@ -428,7 +428,7 @@ namespace VédőEszköz
                 else
                     return;
 
-                IDM_beolvasás.Behajtási_beolvasás(fájlexc);
+                //        IDM_beolvasás.Behajtási_beolvasás(fájlexc);
 
                 MessageBox.Show("Az adat konvertálás befejeződött!", "Figyelmeztetés", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

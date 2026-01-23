@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using MyE = VédőEszköz.Module_Excel;
-using MyX = VédőEszköz.MyClosedXML_Excel;
-namespace Vedo.Ablakok
+namespace VédőEszköz
 {
     public partial class Ablak_Gombok : Form
     {
@@ -277,9 +275,9 @@ namespace Vedo.Ablakok
                 else
                     return;
 
-                MyX.DataGridViewToXML(fájlexc, Tábla);
+                //MyX.DataGridViewToXML(fájlexc, Tábla);
                 MessageBox.Show("Elkészült az Excel tábla: " + fájlexc, "Tájékoztatás", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                MyE.Megnyitás(fájlexc);
+                //   MyE.Megnyitás(fájlexc);
             }
             catch (HibásBevittAdat ex)
             {
