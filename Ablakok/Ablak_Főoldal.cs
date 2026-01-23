@@ -6,12 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Vedo.Ablakok;
-using Vedo.Egyeb;
-using Vedo.Kezelők;
-using Vedo.Vedo_Adat;
 using MyF = Függvénygyűjtemény;
 
-namespace Vedo.Vedo_Ablakok
+namespace VédőEszköz
 {
     public partial class Ablak_Főoldal
     {
@@ -488,47 +485,47 @@ namespace Vedo.Vedo_Ablakok
         {
             Új_Ablak_Hibanaplo = null;
         }
-        Ablak_Védő Uj_ablak_Vedo;
+        //    Ablak_Védő Uj_ablak_Vedo;
         private void VedoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Uj_ablak_Vedo == null)
-            {
-                Uj_ablak_Vedo = new Ablak_Védő();
-                Uj_ablak_Vedo.FormClosed += Uj_ablak_Vedo_Closed;
-                Uj_ablak_Vedo.Show();
-            }
-            else
-            {
-                Uj_ablak_Vedo.Activate();
-                Uj_ablak_Vedo.WindowState = FormWindowState.Normal;
-            }
+            //if (Uj_ablak_Vedo == null)
+            //{
+            //    Uj_ablak_Vedo = new Ablak_Védő();
+            //    Uj_ablak_Vedo.FormClosed += Uj_ablak_Vedo_Closed;
+            //    Uj_ablak_Vedo.Show();
+            //}
+            //else
+            //{
+            //    Uj_ablak_Vedo.Activate();
+            //    Uj_ablak_Vedo.WindowState = FormWindowState.Normal;
+            //}
         }
         private void Uj_ablak_Vedo_Closed(object sender, FormClosedEventArgs e)
         {
-            Uj_ablak_Vedo = null;
+            //       Uj_ablak_Vedo = null;
         }
 
         #region Dolgozó
-        Ablak_Dolgozók Új_Ablak_Dolgozók;
+        //Ablak_Dolgozók Új_Ablak_Dolgozók;
         private void ToolStripMenuItem_Dolgozó_Click(object sender, EventArgs e)
         {
-            if (Új_Ablak_Dolgozók == null)
-            {
-                Új_Ablak_Dolgozók = new Ablak_Dolgozók();
-                Új_Ablak_Dolgozók.FormClosed += Új_Ablak_Dolgozók_FormClosed;
-                Új_Ablak_Dolgozók.Show();
-            }
-            else
-            {
-                Új_Ablak_Dolgozók.Activate();
-                Új_Ablak_Dolgozók.WindowState = FormWindowState.Maximized;
-            }
+            //if (Új_Ablak_Dolgozók == null)
+            //{
+            //    Új_Ablak_Dolgozók = new Ablak_Dolgozók();
+            //    Új_Ablak_Dolgozók.FormClosed += Új_Ablak_Dolgozók_FormClosed;
+            //    Új_Ablak_Dolgozók.Show();
+            //}
+            //else
+            //{
+            //    Új_Ablak_Dolgozók.Activate();
+            //    Új_Ablak_Dolgozók.WindowState = FormWindowState.Maximized;
+            //}
 
         }
 
         private void Új_Ablak_Dolgozók_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Új_Ablak_Dolgozók = null;
+            //Új_Ablak_Dolgozók = null;
         }
         #endregion
 
@@ -557,26 +554,26 @@ namespace Vedo.Vedo_Ablakok
         #endregion
 
         #region Járandóság
-        Ablak_Járandóság Új_Ablak_Járandóság;
+        //Ablak_Járandóság Új_Ablak_Járandóság;
         private void ToolStripMenuItem_Járandóság_Click(object sender, EventArgs e)
         {
-            if (Új_Ablak_Járandóság == null)
-            {
-                Új_Ablak_Járandóság = new Ablak_Járandóság();
-                Új_Ablak_Járandóság.FormClosed += Új_Ablak_Járandóság_FormClosed;
-                Új_Ablak_Járandóság.Show();
-            }
-            else
-            {
-                Új_Ablak_Járandóság.Activate();
-                Új_Ablak_Járandóság.WindowState = FormWindowState.Maximized;
-            }
+            //if (Új_Ablak_Járandóság == null)
+            //{
+            //    Új_Ablak_Járandóság = new Ablak_Járandóság();
+            //    Új_Ablak_Járandóság.FormClosed += Új_Ablak_Járandóság_FormClosed;
+            //    Új_Ablak_Járandóság.Show();
+            //}
+            //else
+            //{
+            //    Új_Ablak_Járandóság.Activate();
+            //    Új_Ablak_Járandóság.WindowState = FormWindowState.Maximized;
+            //}
 
         }
 
         private void Új_Ablak_Járandóság_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Új_Ablak_Járandóság = null;
+            //Új_Ablak_Járandóság = null;
         }
 
         #endregion

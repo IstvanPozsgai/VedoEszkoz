@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 
-namespace Vedo.Vedo_Ablakok
+namespace VédőEszköz
 {
     public partial class Ablak_Főoldal : Form
     {

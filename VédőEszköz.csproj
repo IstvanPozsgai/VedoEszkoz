@@ -68,6 +68,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ablakok\1_Beállítás\Ablak_Felhasználó.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ablakok\1_Beállítás\Ablak_Felhasználó.Designer.cs">
+      <DependentUpon>Ablak_Felhasználó.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ablakok\1_Beállítás\Ablak_Formok.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -76,6 +82,12 @@
     </Compile>
     <Compile Include="Ablakok\1_Beállítás\Ablak_Hibanaplo.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ablakok\1_Beállítás\Ablak_JogKiosztás.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ablakok\1_Beállítás\Ablak_JogKiosztás.Designer.cs">
+      <DependentUpon>Ablak_JogKiosztás.cs</DependentUpon>
     </Compile>
     <Compile Include="Ablakok\2_Alap_Adatok\Ablak_Anyagok.cs">
       <SubType>Form</SubType>
@@ -104,9 +116,11 @@
       <DependentUpon>Ablak_Jelszó_Változtatás.cs</DependentUpon>
     </Compile>
     <Compile Include="Adatbázis\Adatbázis.cs" />
+    <Compile Include="Adatbázis\Adatbázis_Bejelentkezés.cs" />
     <Compile Include="Adatbázis\Adatbázis_Excel_Beolvasás.cs" />
     <Compile Include="Adatbázis\AdatBázis_kezelés.cs" />
     <Compile Include="Adat\Adat_Belépés_Verzió.cs" />
+    <Compile Include="Adat\Adat_Excel_Beolvasás.cs" />
     <Compile Include="Adat\Adat_Gombok.cs" />
     <Compile Include="Adat\Adat_Jogosultságok.cs" />
     <Compile Include="Adat\Adat_Kiegészítő_Könyvtár.cs" />
@@ -121,9 +135,12 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Függvények\AblakokGombok.cs" />
     <Compile Include="Függvények\Fv_Dátum.cs" />
     <Compile Include="Függvények\Fv_szöveg.cs" />
+    <Compile Include="Függvények\Fájl.cs" />
     <Compile Include="Függvények\Függvénygyűjtemény.cs" />
+    <Compile Include="Függvények\Hely_Ellenőr.cs" />
     <Compile Include="Függvények\Jelszó.cs" />
     <Compile Include="Függvények\Kezelő_Értékellenőrzés.cs" />
     <Compile Include="Függvények\KönyvtárEllenőr.cs" />
@@ -139,10 +156,12 @@
     <Compile Include="Input_Forms\InputSelect.cs" />
     <Compile Include="Input_Forms\InputTextbox.cs" />
     <Compile Include="Input_Forms\InputTime.cs" />
+    <Compile Include="Kezelők\Kezelők_Jogosultságok.cs" />
     <Compile Include="Kezelők\Kezelő_Belépés_Verzió.cs" />
     <Compile Include="Kezelők\Kezelő_Excel_Beolvasás.cs" />
     <Compile Include="Kezelők\Kezelő_Gombok.cs" />
     <Compile Include="Kezelők\Kezelő_Kiegészítő_Könyvtár.cs" />
+    <Compile Include="Kezelők\Kezelő_Kép.cs" />
     <Compile Include="Kezelők\Kezelő_Oldalok.cs" />
     <Compile Include="Kezelők\Kezelő_Users.cs" />
     <Compile Include="Program.cs" />
@@ -161,6 +180,12 @@
     <Compile Include="XML\MyClosedXML_Sor_Oszlop.cs" />
     <Compile Include="XML\MyClosedXML_Tábla.cs" />
     <Compile Include="XML\MyClosedXML_XML.cs" />
+    <EmbeddedResource Include="Ablakok\1_Beállítás\Ablak_Felhasználó.resx">
+      <DependentUpon>Ablak_Felhasználó.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ablakok\1_Beállítás\Ablak_JogKiosztás.resx">
+      <DependentUpon>Ablak_JogKiosztás.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Ablakok\Ablak_Bejelentkezés.resx">
       <DependentUpon>Ablak_Bejelentkezés.cs</DependentUpon>
     </EmbeddedResource>
@@ -193,7 +218,17 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <COMReference Include="IWshRuntimeLibrary">
+      <Guid>{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="VédőAdatok\BeolvasásÚj.mdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

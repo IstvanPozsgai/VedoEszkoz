@@ -216,39 +216,6 @@ namespace VédőEszköz
 
         #endregion
 
-        public static long Futás_km(string azonosító, DateTime dátum_érték)
-        {
-            long mennyi = 0;
-            Kezelő_Főkönyv_Zser_Km KézZser = new Kezelő_Főkönyv_Zser_Km();
-            List<Adat_Főkönyv_Zser_Km> AdatokZser = new List<Adat_Főkönyv_Zser_Km>();
-            // ha volt előző év is
-            if (dátum_érték.Year != DateTime.Today.Year)
-            {
-                AdatokZser = KézZser.Lista_adatok(dátum_érték.Year);
-                // ha volt előző évben
-                if (AdatokZser != null && AdatokZser.Count > 0)
-                {
-                    List<Adat_Főkönyv_Zser_Km> SzűrtAdatok = (from a in AdatokZser
-                                                              where a.Azonosító == azonosító.Trim() &&
-                                                              a.Dátum > dátum_érték
-                                                              select a).ToList();
-                    if (SzűrtAdatok != null) mennyi = SzűrtAdatok.Sum(a => a.Napikm);
-                }
-            }
-            AdatokZser.Clear();
-
-            // aktuális év
-            AdatokZser = KézZser.Lista_adatok(DateTime.Today.Year);
-            if (AdatokZser != null && AdatokZser.Count > 0)
-            {
-                List<Adat_Főkönyv_Zser_Km> SzűrtAdatok = (from a in AdatokZser
-                                                          where a.Azonosító == azonosító.Trim() &&
-                                                          a.Dátum >= dátum_érték
-                                                          select a).ToList();
-                if (SzűrtAdatok != null) mennyi += SzűrtAdatok.Sum(a => a.Napikm);
-            }
-            return mennyi;
-        }
 
         public static bool Vanjoga(int melyikelem, int csoport)
         {
