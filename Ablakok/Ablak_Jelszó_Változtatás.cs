@@ -7,7 +7,7 @@ namespace VédőEszköz
 {
     public partial class Ablak_Jelszó_Változtatás : Form
     {
-
+        public delegate void Event_Kidobó();
         public event Event_Kidobó Változás;
         readonly Kezelő_Users Kéz = new Kezelő_Users();
 
