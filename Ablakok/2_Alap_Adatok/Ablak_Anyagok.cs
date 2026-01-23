@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using Vedo.Vedo_Adat;
-using Vedo.Kezelők;
 
-using MyE = Vedo.Module_Excel;
-using MyEn = Vedo.Minden.Enumok;
+
+using MyE = Module_Excel;
+using MyEn = Minden.Enumok;
 using MyF = Függvénygyűjtemény;
 
-namespace Vedo.Ablakok
+namespace VédőEszköz
 {
     public partial class Ablak_Anyagok : Form
     {

@@ -1,16 +1,12 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using Vedo.Egyeb;
-using Vedo.Kezelők;
-using Vedo.Vedo_Adat;
 
-using MyE = Vedo.Module_Excel;
 
-namespace Vedo.Ablakok
+
+namespace VédőEszköz
 {
     public partial class Ablak_Formok : Form
     {
@@ -35,7 +31,7 @@ namespace Vedo.Ablakok
             FormFeltöltése();
             Adatok = Kéz.Lista_Adatok();
             Alap_tábla_író();
-       //     GombLathatosagKezelo.Beallit(this);
+            //     GombLathatosagKezelo.Beallit(this);
         }
 
         private void Ablak_Anyagok_Load(object sender, System.EventArgs e)
@@ -269,9 +265,9 @@ namespace Vedo.Ablakok
                     return;
 
                 fájlexc = fájlexc.Substring(0, fájlexc.Length);
-                MyE.DataGridViewToExcel(fájlexc, Tábla, true);
+                //MyE.DataGridViewToExcel(fájlexc, Tábla, true);
                 MessageBox.Show("Elkészült az Excel tábla: " + fájlexc, "Tájékoztatás", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                MyE.Megnyitás(fájlexc);
+                //   MyE.Megnyitás(fájlexc);
             }
             catch (HibásBevittAdat ex)
             {

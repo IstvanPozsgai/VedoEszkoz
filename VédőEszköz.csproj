@@ -77,6 +77,9 @@
     <Compile Include="Ablakok\1_Beállítás\Ablak_Formok.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Ablakok\1_Beállítás\Ablak_Formok.Designer.cs">
+      <DependentUpon>Ablak_Formok.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ablakok\1_Beállítás\Ablak_Gombok.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -182,6 +185,9 @@
     <Compile Include="XML\MyClosedXML_XML.cs" />
     <EmbeddedResource Include="Ablakok\1_Beállítás\Ablak_Felhasználó.resx">
       <DependentUpon>Ablak_Felhasználó.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ablakok\1_Beállítás\Ablak_Formok.resx">
+      <DependentUpon>Ablak_Formok.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ablakok\1_Beállítás\Ablak_JogKiosztás.resx">
       <DependentUpon>Ablak_JogKiosztás.cs</DependentUpon>
