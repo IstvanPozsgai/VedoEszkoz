@@ -36,6 +36,9 @@
     <Reference Include="AdvancedDataGridView, Version=1.2.30115.18, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\DG.AdvancedDataGridView.1.2.30115.18\lib\net40\AdvancedDataGridView.dll</HintPath>
     </Reference>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>packages\BouncyCastle.Cryptography.2.6.2\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=3.4.1.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
       <HintPath>packages\DocumentFormat.OpenXml.3.4.1\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
     </Reference>
@@ -94,9 +97,16 @@
     <Compile Include="Ablakok\Ablak_Főoldal.designer.cs">
       <DependentUpon>Ablak_Főoldal.cs</DependentUpon>
     </Compile>
+    <Compile Include="Ablakok\Ablak_Jelszó_Változtatás.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ablakok\Ablak_Jelszó_Változtatás.Designer.cs">
+      <DependentUpon>Ablak_Jelszó_Változtatás.cs</DependentUpon>
+    </Compile>
     <Compile Include="Adatbázis\Adatbázis.cs" />
     <Compile Include="Adatbázis\Adatbázis_Excel_Beolvasás.cs" />
     <Compile Include="Adatbázis\AdatBázis_kezelés.cs" />
+    <Compile Include="Adat\Adat_Belépés_Verzió.cs" />
     <Compile Include="Adat\Adat_Gombok.cs" />
     <Compile Include="Adat\Adat_Jogosultságok.cs" />
     <Compile Include="Adat\Adat_Kiegészítő_Könyvtár.cs" />
@@ -114,6 +124,9 @@
     <Compile Include="Függvények\Fv_Dátum.cs" />
     <Compile Include="Függvények\Fv_szöveg.cs" />
     <Compile Include="Függvények\Függvénygyűjtemény.cs" />
+    <Compile Include="Függvények\Jelszó.cs" />
+    <Compile Include="Függvények\Kezelő_Értékellenőrzés.cs" />
+    <Compile Include="Függvények\KönyvtárEllenőr.cs" />
     <Compile Include="Függvények\Oszlopneve.cs" />
     <Compile Include="Hibakezelés\Hibakezelés.cs" />
     <Compile Include="Hibakezelés\Hibanapló_Részletes.cs" />
@@ -153,6 +166,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Ablakok\Ablak_Főoldal.resx">
       <DependentUpon>Ablak_Főoldal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ablakok\Ablak_Jelszó_Változtatás.resx">
+      <DependentUpon>Ablak_Jelszó_Változtatás.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

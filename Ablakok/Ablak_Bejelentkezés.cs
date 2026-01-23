@@ -7,8 +7,9 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Vedo.Vedo_Ablakok;
 
+
 using static System.IO.File;
-using MyE = Vedo.Module_Excel;
+using MyE = VédőEszköz.Module_Excel;
 
 namespace VédőEszköz
 {
