@@ -1,14 +1,12 @@
-﻿using ArrayToExcel;
-using System;
+﻿using System;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using Villamos.Adatszerkezet;
 using DataTable = System.Data.DataTable;
 using MyF = Függvénygyűjtemény;
 
-namespace Villamos
+namespace VédőEszköz
 {
     public static partial class MyClosedXML_Excel
     {

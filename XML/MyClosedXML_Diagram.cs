@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using Villamos.Adatszerkezet;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using A = DocumentFormat.OpenXml.Drawing;
-using Xdr = DocumentFormat.OpenXml.Drawing.Spreadsheet;
 using C = DocumentFormat.OpenXml.Drawing.Charts;
+using Xdr = DocumentFormat.OpenXml.Drawing.Spreadsheet;
 
-namespace Villamos
+namespace VédőEszköz
 {
     public static partial class MyClosedXML_Excel
     {
@@ -225,10 +224,10 @@ namespace Villamos
             // Feliratok beállítása
             var dLbls = new C.DataLabels(
                 new C.ShowLegendKey() { Val = false },
-                new C.ShowValue() { Val = false },   
-                new C.ShowCategoryName() { Val = true },   
+                new C.ShowValue() { Val = false },
+                new C.ShowCategoryName() { Val = true },
                 new C.ShowSeriesName() { Val = false },
-                new C.ShowPercent() { Val = true },  
+                new C.ShowPercent() { Val = true },
                 new C.ShowBubbleSize() { Val = false },
                 new C.ShowLeaderLines() { Val = true }
             );

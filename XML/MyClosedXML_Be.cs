@@ -3,26 +3,28 @@ using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace Villamos
+
+namespace VédőEszköz
 {
     public static partial class MyClosedXML_Excel
     {
+
         public static string Beolvas(string munkalapnév, string honnan)
         {
             string válasz = "_";
-            try
-            {
-                IXLWorksheet lap = xlWorkBook.Worksheet(munkalapnév);
-                válasz = lap.Cell(honnan).Value.ToStrTrim();
-                if (válasz.Trim() == "") válasz = "_";
-            }
-            catch (Exception ex)
-            {
-                StackFrame hívó = new System.Diagnostics.StackTrace().GetFrame(1);
-                string hívóInfo = hívó?.GetMethod()?.DeclaringType?.FullName + "-" + hívó?.GetMethod()?.Name;
-                HibaNapló.Log(ex.Message, $"Beolvas(honnan {honnan}) \n Hívó: {hívóInfo}", ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //try
+            //{
+            //    IXLWorksheet lap =  Workbook.Worksheet(munkalapnév);
+            //    válasz = lap.Cell(honnan).Value.ToStrTrim();
+            //    if (válasz.Trim() == "") válasz = "_";
+            //}
+            //catch (Exception ex)
+            //{
+            //    StackFrame hívó = new System.Diagnostics.StackTrace().GetFrame(1);
+            //    string hívóInfo = hívó?.GetMethod()?.DeclaringType?.FullName + "-" + hívó?.GetMethod()?.Name;
+            //    HibaNapló.Log(ex.Message, $"Beolvas(honnan {honnan}) \n Hívó: {hívóInfo}", ex.StackTrace, ex.Source, ex.HResult);
+            //    MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
             return válasz;
         }
 

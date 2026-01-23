@@ -3,7 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace Villamos
+namespace VédőEszköz
 {
 
     public static partial class MyClosedXML_Excel
@@ -23,7 +23,7 @@ namespace Villamos
             {
                 if (mit.Contains("#SZÁMD#"))
                 {
-                    xlWorkSheet.Range(hova).Value = mit.Replace("#SZÁMD#", "").ToÉrt_Double ();
+                    xlWorkSheet.Range(hova).Value = mit.Replace("#SZÁMD#", "").ToÉrt_Double();
                 }
                 else if (mit.Contains("#SZÁME#"))
                 {

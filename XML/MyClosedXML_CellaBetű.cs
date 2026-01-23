@@ -7,9 +7,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using Villamos.Adatszerkezet;
 
-namespace Villamos
+
+namespace VédőEszköz
 {
     public static partial class MyClosedXML_Excel
     {

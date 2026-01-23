@@ -1,13 +1,12 @@
 ﻿using ClosedXML.Excel;
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Villamos.Adatszerkezet;
 
 
 
-namespace Villamos
+
+namespace VédőEszköz
 {
 
     public static partial class MyClosedXML_Excel

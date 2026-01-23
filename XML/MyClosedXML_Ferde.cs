@@ -3,11 +3,9 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Villamos.Adatszerkezet;
-using static Villamos.V_MindenEgyéb.Enumok;
 
 
-namespace Villamos
+namespace VédőEszköz
 {
     public static partial class MyClosedXML_Excel
     {

@@ -6,12 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Villamos.Adatszerkezet;
-using A = DocumentFormat.OpenXml.Drawing;
-using Xdr = DocumentFormat.OpenXml.Drawing.Spreadsheet;
 
 
-namespace Villamos
+namespace VédőEszköz
 {
     public static partial class MyClosedXML_Excel
     {

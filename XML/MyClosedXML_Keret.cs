@@ -2,9 +2,8 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
-using Villamos.Adatszerkezet;
 
-namespace Villamos
+namespace VédőEszköz
 {
     public static partial class MyClosedXML_Excel
     {
@@ -111,10 +110,10 @@ namespace Villamos
                 tartomány.Style.Border.RightBorder = XLBorderStyleValues.None;
 
                 // Felső szegély
-                tartomány.Style.Border.TopBorder = XLBorderStyleValues.None ;
+                tartomány.Style.Border.TopBorder = XLBorderStyleValues.None;
 
                 // Alsó szegély ← ez a kritikus!
-                tartomány.Style.Border.BottomBorder = XLBorderStyleValues.Thin  ;
+                tartomány.Style.Border.BottomBorder = XLBorderStyleValues.Thin;
 
             }
             catch (Exception ex)
@@ -230,7 +229,7 @@ namespace Villamos
             try
             {
                 IXLWorksheet munkalap = xlWorkBook.Worksheet(munkalapnév);
-                IXLRange tartomány = munkalap.Range(Kijelöltterület);                
+                IXLRange tartomány = munkalap.Range(Kijelöltterület);
 
                 // Bal szegély kikapcsolása
                 tartomány.Style.Border.LeftBorder = XLBorderStyleValues.None;

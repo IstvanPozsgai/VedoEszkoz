@@ -6,10 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
-using Villamos.Adatszerkezet;
-using Villamos.Kezelők;
 
-namespace Villamos
+
+namespace VédőEszköz
 {
     public static partial class MyClosedXML_Excel
     {
@@ -17,114 +16,7 @@ namespace Villamos
         private static readonly XNamespace ss = "urn:schemas-microsoft-com:office:spreadsheet";
 
 
-        public static List<Adat_Kidobó> BeolvasKidobó(string Fájlnév)
-        {
-            List<Adat_Kidobó> Adatok = new List<Adat_Kidobó>();
-            try
-            {
-                // fájl beolvasása nyers szövegként
-                var enc = Encoding.GetEncoding("ISO-8859-2");
-                string raw;
-                using (var sr = new StreamReader(Fájlnév, enc, detectEncodingFromByteOrderMarks: false))
-                { raw = sr.ReadToEnd(); }
-                string clean = TisztitXML(raw);
-
-                XDocument doc;
-                try
-                {
-                    doc = XDocument.Parse(clean);
-                }
-                catch (Exception ex1)
-                {
-                    throw new HibásBevittAdat("A fájl nem olvasható: " + ex1.Message);
-                }
-                Dictionary<string, int> Fejlécek = FejlécBeolvasásD(doc);
-                //Ellenőrzés
-                if (!Betöltéshelyes("Kidobó", FejlécBeolvasás(doc))) throw new HibásBevittAdat("Nem megfelelő a betölteni kívánt adatok formátuma ! ");
-
-
-                //Meghatározzuk a beolvasó tábla elnevezéseit 
-                //Oszlopnevek beállítása
-                List<Adat_Excel_Beolvasás> oszlopnév = KézBeolvasás.Lista_Adatok();
-                string oszlopVisz = (from a in oszlopnév where a.Csoport == "Kidobó" && a.Státusz == false && a.Változónév == "Viszonylat" select a.Fejléc).FirstOrDefault();
-                string oszlopForg = (from a in oszlopnév where a.Csoport == "Kidobó" && a.Státusz == false && a.Változónév == "Forgalmiszám" select a.Fejléc).FirstOrDefault();
-                string oszlopJvez = (from a in oszlopnév where a.Csoport == "Kidobó" && a.Státusz == false && a.Változónév == "Jvez" select a.Fejléc).FirstOrDefault();
-                string oszlopKezd = (from a in oszlopnév where a.Csoport == "Kidobó" && a.Státusz == false && a.Változónév == "Kezdés" select a.Fejléc).FirstOrDefault();
-                string oszlopVég = (from a in oszlopnév where a.Csoport == "Kidobó" && a.Státusz == false && a.Változónév == "Végzés" select a.Fejléc).FirstOrDefault();
-                string oszlopKezdH = (from a in oszlopnév where a.Csoport == "Kidobó" && a.Státusz == false && a.Változónév == "Kezdéshely" select a.Fejléc).FirstOrDefault();
-                string oszlopVégH = (from a in oszlopnév where a.Csoport == "Kidobó" && a.Státusz == false && a.Változónév == "Végzéshely" select a.Fejléc).FirstOrDefault();
-                string oszlopKód = (from a in oszlopnév where a.Csoport == "Kidobó" && a.Státusz == false && a.Változónév == "Kód" select a.Fejléc).FirstOrDefault();
-                string oszlopSzer = (from a in oszlopnév where a.Csoport == "Kidobó" && a.Státusz == false && a.Változónév == "Szerelvénytípus" select a.Fejléc).FirstOrDefault();
-                string oszlopTörzs = (from a in oszlopnév where a.Csoport == "Kidobó" && a.Státusz == false && a.Változónév == "Törzsszám" select a.Fejléc).FirstOrDefault();
-
-
-                //  Ha a fejléc jó → mehet a sima index alapú beolvasás
-                var rows = doc.Descendants(ss + "Row").ToList();
-
-                for (int r = 6; r < rows.Count; r++)
-                {
-                    XElement row = rows[r];
-                    List<XElement> cells = row.Elements(ss + "Cell").ToList();
-                    // Segédfüggvény: oszlopnév alapján érték
-                    string GetCellValue(string columnName)
-                    {
-                        if (Fejlécek.TryGetValue(columnName, out int index) && index < cells.Count)
-                            return XmlCell.GetValue(cells[index]);
-                        return null;
-                    }
-
-                    if (cells.Count == 0) continue;
-
-                    string viszSzolg = GetCellValue(oszlopVisz); ;
-                    if (string.IsNullOrWhiteSpace(viszSzolg)) continue;    //Üres sort kihagy
-
-                    string[] darabol = viszSzolg.Split('/');
-
-                    string Viszonylat = darabol[0].Trim();
-                    string Forgalmiszám = GetCellValue(oszlopForg);
-                    string Szolgálatiszám = darabol[1].Trim();
-                    string Jvez = GetCellValue(oszlopJvez);
-                    DateTime Kezdés = ParseIdo(GetCellValue(oszlopKezd)) ?? new DateTime(1900,1,1);
-                    DateTime Végzés = ParseIdo(GetCellValue(oszlopVég)) ?? new DateTime(1900,1,1);
-                    string Kezdéshely = GetCellValue(oszlopKezdH);
-                    string Végzéshely = GetCellValue(oszlopVégH);
-                    string Kód = GetCellValue(oszlopKód);
-                    string Szerelvénytípus = GetCellValue(oszlopSzer);
-                    string Törzsszám = GetCellValue(oszlopTörzs);
-
-                    Adat_Kidobó adat = new Adat_Kidobó(
-                        Viszonylat,
-                        Forgalmiszám,
-                        Szolgálatiszám,
-                        Jvez,
-                        Kezdés,
-                        Végzés,
-                        Kezdéshely,
-                        Végzéshely,
-                        Kód,
-                        "_",
-                        "_",
-                        "_",
-                        Szerelvénytípus,
-                        Törzsszám
-                    );
-                    Adatok.Add(adat);
-                }
-            }
-            catch (HibásBevittAdat ex)
-            {
-                MessageBox.Show(ex.Message, "Információ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, "BeolvasKidobó", ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            return Adatok;
-        }
-
-
+   
 
         private static DateTime? ParseIdo(string s)
         {

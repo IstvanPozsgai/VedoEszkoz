@@ -4,7 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using MyF = Függvénygyűjtemény;
+using MyF = VédőEszköz. Függvénygyűjtemény;
 using MyO = Microsoft.Office.Interop.Outlook;
 
 namespace VédőEszköz

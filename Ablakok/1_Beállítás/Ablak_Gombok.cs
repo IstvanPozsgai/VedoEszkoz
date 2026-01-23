@@ -3,12 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using Vedo.Vedo_Adat;
-using Vedo.Kezelők;
-using Vedo.Egyeb;
-using MyF = Függvénygyűjtemény;
-using MyX = Vedo.MyClosedXML_Excel;
-using MyE = Vedo.Module_Excel;
+using MyE = VédőEszköz.Module_Excel;
+using MyX = VédőEszköz.MyClosedXML_Excel;
 namespace Vedo.Ablakok
 {
     public partial class Ablak_Gombok : Form

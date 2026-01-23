@@ -10,7 +10,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 
-namespace Villamos
+namespace VédőEszköz
 {
     public static partial class MyClosedXML_Excel
     {
