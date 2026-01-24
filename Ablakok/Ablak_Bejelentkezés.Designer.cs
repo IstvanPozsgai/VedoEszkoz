@@ -238,6 +238,7 @@ namespace VédőEszköz
             // 
             // Súgó
             // 
+            this.Súgó.BackgroundImage = global::VédőEszköz.Properties.Resources.Help_Support;
             this.Súgó.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.Súgó.Location = new System.Drawing.Point(621, 17);
             this.Súgó.Name = "Súgó";

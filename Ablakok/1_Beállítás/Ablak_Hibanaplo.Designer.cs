@@ -45,8 +45,8 @@
             this.Hibanaplo_Tablazat.AllowUserToAddRows = false;
             this.Hibanaplo_Tablazat.AllowUserToDeleteRows = false;
             this.Hibanaplo_Tablazat.AllowUserToOrderColumns = true;
-            this.Hibanaplo_Tablazat.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.Hibanaplo_Tablazat.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
@@ -82,7 +82,7 @@
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -98,7 +98,7 @@
             // Részletek
             // 
             this.Részletek.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-
+            this.Részletek.BackgroundImage = global::VédőEszköz.Properties.Resources.App_xmag_search;
             this.Részletek.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.Részletek.Location = new System.Drawing.Point(3, 3);
             this.Részletek.Name = "Részletek";

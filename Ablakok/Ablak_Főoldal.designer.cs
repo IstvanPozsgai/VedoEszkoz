@@ -312,6 +312,7 @@ namespace VédőEszköz
             // 
             // Menükinyitás
             // 
+            this.Menükinyitás.BackgroundImage = global::VédőEszköz.Properties.Resources.Button_Download_01;
             this.Menükinyitás.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.Menükinyitás.Location = new System.Drawing.Point(409, 23);
             this.Menükinyitás.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -324,6 +325,7 @@ namespace VédőEszköz
             // 
             // Verzió_Váltás
             // 
+            this.Verzió_Váltás.BackgroundImage = global::VédőEszköz.Properties.Resources.Mimetype_recycled;
             this.Verzió_Váltás.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.Verzió_Váltás.Location = new System.Drawing.Point(338, 23);
             this.Verzió_Váltás.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);

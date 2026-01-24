@@ -44,19 +44,19 @@
             // 
             // Új_adat
             // 
-        
+            this.Új_adat.BackgroundImage = global::VédőEszköz.Properties.Resources.Ok_gyűjtemény;
             this.Új_adat.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.Új_adat.Location = new System.Drawing.Point(3, 3);
             this.Új_adat.Name = "Új_adat";
             this.Új_adat.Size = new System.Drawing.Size(44, 44);
             this.Új_adat.TabIndex = 209;
-            this.toolTip1.SetToolTip(this.Új_adat, "Új adat");
+            this.toolTip1.SetToolTip(this.Új_adat, "Új elem/Kijelölt elem módosítása");
             this.Új_adat.UseVisualStyleBackColor = true;
             this.Új_adat.Click += new System.EventHandler(this.Új_adat_Click);
             // 
             // BtnFrissít
             // 
- 
+            this.BtnFrissít.BackgroundImage = global::VédőEszköz.Properties.Resources.frissít_gyűjtemény;
             this.BtnFrissít.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.BtnFrissít.Location = new System.Drawing.Point(58, 3);
             this.BtnFrissít.Name = "BtnFrissít";
@@ -68,7 +68,7 @@
             // 
             // BtnExcel
             // 
-      
+            this.BtnExcel.BackgroundImage = global::VédőEszköz.Properties.Resources.Excel_gyűjtő;
             this.BtnExcel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.BtnExcel.Location = new System.Drawing.Point(113, 3);
             this.BtnExcel.Name = "BtnExcel";
@@ -82,8 +82,8 @@
             // 
             this.Tábla.AllowUserToAddRows = false;
             this.Tábla.AllowUserToDeleteRows = false;
-            this.Tábla.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.Tábla.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Tábla.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.Tábla.FilterAndSortEnabled = true;

@@ -30,6 +30,11 @@
         {
             this.components = new System.ComponentModel.Container();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.BtnFrissít = new System.Windows.Forms.Button();
+            this.Alap_Rögzít = new System.Windows.Forms.Button();
+            this.Új_adat = new System.Windows.Forms.Button();
+            this.BtnExcel = new System.Windows.Forms.Button();
+            this.BtnSugó = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.TxtId = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -43,11 +48,6 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.Láthatóság = new System.Windows.Forms.CheckBox();
             this.Tábla = new Zuby.ADGV.AdvancedDataGridView();
-            this.BtnFrissít = new System.Windows.Forms.Button();
-            this.Alap_Rögzít = new System.Windows.Forms.Button();
-            this.Új_adat = new System.Windows.Forms.Button();
-            this.BtnExcel = new System.Windows.Forms.Button();
-            this.BtnSugó = new System.Windows.Forms.Button();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Tábla)).BeginInit();
@@ -75,6 +75,65 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(210, 222);
             this.tableLayoutPanel2.TabIndex = 225;
+            // 
+            // BtnFrissít
+            // 
+            this.BtnFrissít.BackgroundImage = global::VédőEszköz.Properties.Resources.frissít_gyűjtemény;
+            this.BtnFrissít.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.BtnFrissít.Location = new System.Drawing.Point(153, 103);
+            this.BtnFrissít.Name = "BtnFrissít";
+            this.BtnFrissít.Size = new System.Drawing.Size(45, 44);
+            this.BtnFrissít.TabIndex = 215;
+            this.toolTip1.SetToolTip(this.BtnFrissít, "Frissítés");
+            this.BtnFrissít.UseVisualStyleBackColor = true;
+            this.BtnFrissít.Click += new System.EventHandler(this.BtnFrissít_Click);
+            // 
+            // Alap_Rögzít
+            // 
+            this.Alap_Rögzít.BackgroundImage = global::VédőEszköz.Properties.Resources.Ok_gyűjtemény;
+            this.Alap_Rögzít.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.Alap_Rögzít.Location = new System.Drawing.Point(3, 153);
+            this.Alap_Rögzít.Name = "Alap_Rögzít";
+            this.Alap_Rögzít.Size = new System.Drawing.Size(44, 44);
+            this.Alap_Rögzít.TabIndex = 206;
+            this.toolTip1.SetToolTip(this.Alap_Rögzít, "Rögzítés");
+            this.Alap_Rögzít.UseVisualStyleBackColor = true;
+            this.Alap_Rögzít.Click += new System.EventHandler(this.Alap_Rögzít_Click);
+            // 
+            // Új_adat
+            // 
+            this.Új_adat.BackgroundImage = global::VédőEszköz.Properties.Resources.New_gyűjtemény;
+            this.Új_adat.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.Új_adat.Location = new System.Drawing.Point(3, 53);
+            this.Új_adat.Name = "Új_adat";
+            this.Új_adat.Size = new System.Drawing.Size(44, 44);
+            this.Új_adat.TabIndex = 209;
+            this.toolTip1.SetToolTip(this.Új_adat, "Új adat");
+            this.Új_adat.UseVisualStyleBackColor = true;
+            this.Új_adat.Click += new System.EventHandler(this.Új_adat_Click);
+            // 
+            // BtnExcel
+            // 
+            this.BtnExcel.BackgroundImage = global::VédőEszköz.Properties.Resources.Excel_gyűjtő;
+            this.BtnExcel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.BtnExcel.Location = new System.Drawing.Point(153, 53);
+            this.BtnExcel.Name = "BtnExcel";
+            this.BtnExcel.Size = new System.Drawing.Size(45, 44);
+            this.BtnExcel.TabIndex = 218;
+            this.toolTip1.SetToolTip(this.BtnExcel, "Excel kimenet készítés");
+            this.BtnExcel.UseVisualStyleBackColor = true;
+            this.BtnExcel.Click += new System.EventHandler(this.BtnExcel_Click);
+            // 
+            // BtnSugó
+            // 
+            this.BtnSugó.BackgroundImage = global::VédőEszköz.Properties.Resources.Help_Support;
+            this.BtnSugó.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.BtnSugó.Location = new System.Drawing.Point(153, 3);
+            this.BtnSugó.Name = "BtnSugó";
+            this.BtnSugó.Size = new System.Drawing.Size(45, 44);
+            this.BtnSugó.TabIndex = 219;
+            this.toolTip1.SetToolTip(this.BtnSugó, "Excel kimenet készítés");
+            this.BtnSugó.UseVisualStyleBackColor = true;
             // 
             // label5
             // 
@@ -203,8 +262,8 @@
             // 
             this.Tábla.AllowUserToAddRows = false;
             this.Tábla.AllowUserToDeleteRows = false;
-            this.Tábla.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.Tábla.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Tábla.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.Tábla.FilterAndSortEnabled = true;
@@ -217,65 +276,6 @@
             this.Tábla.Size = new System.Drawing.Size(942, 280);
             this.Tábla.SortStringChangedInvokeBeforeDatasourceUpdate = true;
             this.Tábla.TabIndex = 223;
-            // 
-            // BtnFrissít
-            // 
-           
-            this.BtnFrissít.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.BtnFrissít.Location = new System.Drawing.Point(153, 103);
-            this.BtnFrissít.Name = "BtnFrissít";
-            this.BtnFrissít.Size = new System.Drawing.Size(45, 44);
-            this.BtnFrissít.TabIndex = 215;
-            this.toolTip1.SetToolTip(this.BtnFrissít, "Frissítés");
-            this.BtnFrissít.UseVisualStyleBackColor = true;
-            this.BtnFrissít.Click += new System.EventHandler(this.BtnFrissít_Click);
-            // 
-            // Alap_Rögzít
-            // 
-         
-            this.Alap_Rögzít.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.Alap_Rögzít.Location = new System.Drawing.Point(3, 153);
-            this.Alap_Rögzít.Name = "Alap_Rögzít";
-            this.Alap_Rögzít.Size = new System.Drawing.Size(44, 44);
-            this.Alap_Rögzít.TabIndex = 206;
-            this.toolTip1.SetToolTip(this.Alap_Rögzít, "Rögzítés");
-            this.Alap_Rögzít.UseVisualStyleBackColor = true;
-            this.Alap_Rögzít.Click += new System.EventHandler(this.Alap_Rögzít_Click);
-            // 
-            // Új_adat
-            // 
-        
-            this.Új_adat.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.Új_adat.Location = new System.Drawing.Point(3, 53);
-            this.Új_adat.Name = "Új_adat";
-            this.Új_adat.Size = new System.Drawing.Size(44, 44);
-            this.Új_adat.TabIndex = 209;
-            this.toolTip1.SetToolTip(this.Új_adat, "Új adat");
-            this.Új_adat.UseVisualStyleBackColor = true;
-            this.Új_adat.Click += new System.EventHandler(this.Új_adat_Click);
-            // 
-            // BtnExcel
-            // 
-
-            this.BtnExcel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.BtnExcel.Location = new System.Drawing.Point(153, 53);
-            this.BtnExcel.Name = "BtnExcel";
-            this.BtnExcel.Size = new System.Drawing.Size(45, 44);
-            this.BtnExcel.TabIndex = 218;
-            this.toolTip1.SetToolTip(this.BtnExcel, "Excel kimenet készítés");
-            this.BtnExcel.UseVisualStyleBackColor = true;
-            this.BtnExcel.Click += new System.EventHandler(this.BtnExcel_Click);
-            // 
-            // BtnSugó
-            // 
-         
-            this.BtnSugó.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.BtnSugó.Location = new System.Drawing.Point(153, 3);
-            this.BtnSugó.Name = "BtnSugó";
-            this.BtnSugó.Size = new System.Drawing.Size(45, 44);
-            this.BtnSugó.TabIndex = 219;
-            this.toolTip1.SetToolTip(this.BtnSugó, "Excel kimenet készítés");
-            this.BtnSugó.UseVisualStyleBackColor = true;
             // 
             // Ablak_Formok
             // 

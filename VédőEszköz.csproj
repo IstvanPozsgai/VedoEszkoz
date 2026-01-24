@@ -143,10 +143,10 @@
     <Compile Include="Ablakok\Ablak_Főoldal.designer.cs">
       <DependentUpon>Ablak_Főoldal.cs</DependentUpon>
     </Compile>
-    <Compile Include="Ablakok\Ablak_Gombok.cs">
+    <Compile Include="Ablakok\1_Beállítás\Ablak_Gombok.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Ablakok\Ablak_Gombok.Designer.cs">
+    <Compile Include="Ablakok\1_Beállítás\Ablak_Gombok.Designer.cs">
       <DependentUpon>Ablak_Gombok.cs</DependentUpon>
     </Compile>
     <Compile Include="Ablakok\Ablak_Jelszó_Változtatás.cs">
@@ -258,7 +258,7 @@
     <EmbeddedResource Include="Ablakok\Ablak_Főoldal.resx">
       <DependentUpon>Ablak_Főoldal.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Ablakok\Ablak_Gombok.resx">
+    <EmbeddedResource Include="Ablakok\1_Beállítás\Ablak_Gombok.resx">
       <DependentUpon>Ablak_Gombok.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ablakok\Ablak_Jelszó_Változtatás.resx">
@@ -272,6 +272,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -335,6 +336,18 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Help Support.ico" />
+    <None Include="Resources\Mimetype-recycled.ico" />
+    <None Include="Resources\Button Download-01.ico" />
+    <None Include="Resources\New gyűjtemény.ico" />
+    <None Include="Resources\community_users.ico" />
+    <None Include="Resources\frissít gyűjtemény.ico" />
+    <None Include="Resources\Ok gyűjtemény.ico" />
+    <None Include="Resources\Aha-Soft-Security-Modify-key.ico" />
+    <None Include="Resources\mndent kijelöl.ico" />
+    <None Include="Resources\üres lista.ico" />
+    <None Include="Resources\Excel gyűjtő.ico" />
+    <None Include="Resources\App-xmag-search.ico" />
     <Content Include="VédőAdatok\BeolvasásÚj.mdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

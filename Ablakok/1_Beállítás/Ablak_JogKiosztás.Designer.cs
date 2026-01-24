@@ -78,6 +78,7 @@ namespace VédőEszköz
             // 
             // Frissít
             // 
+            this.Frissít.BackgroundImage = global::VédőEszköz.Properties.Resources.frissít_gyűjtemény;
             this.Frissít.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.Frissít.Location = new System.Drawing.Point(7, 3);
             this.Frissít.Name = "Frissít";
@@ -90,6 +91,7 @@ namespace VédőEszköz
             // SzervezetMinden
             // 
             this.SzervezetMinden.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SzervezetMinden.BackgroundImage = global::VédőEszköz.Properties.Resources.mndent_kijelöl;
             this.SzervezetMinden.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.SzervezetMinden.Location = new System.Drawing.Point(398, 9);
             this.SzervezetMinden.Name = "SzervezetMinden";
@@ -102,6 +104,7 @@ namespace VédőEszköz
             // SzervezetSemmi
             // 
             this.SzervezetSemmi.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SzervezetSemmi.BackgroundImage = global::VédőEszköz.Properties.Resources.üres_lista;
             this.SzervezetSemmi.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.SzervezetSemmi.Location = new System.Drawing.Point(449, 9);
             this.SzervezetSemmi.Name = "SzervezetSemmi";
@@ -124,6 +127,7 @@ namespace VédőEszköz
             // 
             // BtnSugó
             // 
+            this.BtnSugó.BackgroundImage = global::VédőEszköz.Properties.Resources.Help_Support;
             this.BtnSugó.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.BtnSugó.Location = new System.Drawing.Point(1497, 3);
             this.BtnSugó.Name = "BtnSugó";
@@ -176,7 +180,7 @@ namespace VédőEszköz
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 300F));
@@ -201,7 +205,7 @@ namespace VédőEszköz
             // 
             // panel3
             // 
-            this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel3.Controls.Add(this.panel4);
             this.panel3.Controls.Add(this.CmbGombId);
@@ -230,7 +234,7 @@ namespace VédőEszköz
             // 
             // CmbGombok
             // 
-            this.CmbGombok.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.CmbGombok.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.CmbGombok.FormattingEnabled = true;
             this.CmbGombok.Location = new System.Drawing.Point(3, 3);
@@ -321,8 +325,8 @@ namespace VédőEszköz
             // 
             this.Tábla.AllowUserToAddRows = false;
             this.Tábla.AllowUserToDeleteRows = false;
-            this.Tábla.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.Tábla.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Tábla.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.Tábla.FilterAndSortEnabled = true;
