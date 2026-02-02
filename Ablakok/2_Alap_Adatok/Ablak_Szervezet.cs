@@ -33,7 +33,7 @@ namespace VédőEszköz
 
         private void Új_adat_Click(object sender, EventArgs e)
         {
-            new Ablak_Szervezet_Kezelo().Kezelés(null, Alap_tábla_író);
+            new Ablak_Szervezet_Kezelo().Kezelés();
         }
 
         private void BtnFrissít_Click(object sender, EventArgs e)
@@ -160,18 +160,28 @@ namespace VédőEszköz
         {
             try
             {
-                if (e.RowIndex < 0) throw new HibásBevittAdat("Nincs kiválasztva érvényes sor.");
+                if (e.RowIndex < 0)
+                    throw new HibásBevittAdat("Nincs kiválasztva érvényes sor.");
 
-                // Adatok kinyerése a rácsból biztonságosan
-                string idStr = Tábla.Rows[e.RowIndex].Cells["Id"].Value?.ToString() ?? "0";
-                string nev = Tábla.Rows[e.RowIndex].Cells["Szervezet"].Value?.ToString() ?? "";
-                string statusStr = Tábla.Rows[e.RowIndex].Cells["Státus"].Value?.ToString() ?? "Aktív";
+                string idStr = Tábla.Rows[e.RowIndex].Cells["Id"].Value?.ToString();
+                string nev = Tábla.Rows[e.RowIndex].Cells["Szervezet"].Value?.ToString();
+                string statusStr = Tábla.Rows[e.RowIndex].Cells["Státus"].Value?.ToString();
 
-                int id = int.Parse(idStr);
-                bool isTorolt = (statusStr == "Törölt");
+                if (!int.TryParse(idStr, out int id))
+                    throw new HibásBevittAdat("Érvénytelen azonosító.");
 
-                Adat_Szervezet kivalasztott = new Adat_Szervezet(id, nev, isTorolt);
-                new Ablak_Szervezet_Kezelo().Kezelés(kivalasztott, Alap_tábla_író);
+                bool status = statusStr == "Aktív";
+
+                Adat_Szervezet kivalasztott = new Adat_Szervezet(
+                    id,
+                    nev,
+                    status
+                );
+
+                new Ablak_Szervezet_Kezelo()
+                {
+                    FrissítésCallBack = Alap_tábla_író
+                }.Kezelés(kivalasztott);
             }
             catch (HibásBevittAdat ex)
             {

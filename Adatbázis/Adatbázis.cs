@@ -1,32 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.OleDb;
+using System.Data.SQLite;
 using VédőEszköz;
 
 internal static partial class Adatbázis
 {
+    private static bool IsSQLite(string holvan) =>
+        holvan.ToLower().EndsWith(".db") || holvan.ToLower().EndsWith(".sqlite");
 
-    /// <summary>
-    /// Adatbázisban módosít a küldött szöveg alapján (SQL)
-    /// </summary>
-    /// <param name="holvan"> A fájl elérhetőségének helye </param>
-    /// <param name="ABjelszó"> Adatbázis jelszó </param>
-    /// <param name="SQLszöveg"> SQl módosítási szöveg </param>
+    private static IDbConnection KapcsolatLétrehozás(string holvan, string ABjelszó)
+    {
+        if (IsSQLite(holvan))
+            return new SQLiteConnection($"Data Source={holvan};Version=3;Password={ABjelszó};");
+
+        string kapcsolatiszöveg = holvan.Contains(".mdb")
+            ? $"Provider=Microsoft.Jet.OleDb.4.0;Data Source='{holvan}';Jet Oledb:Database Password={ABjelszó}"
+            : $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source='{holvan}';Jet OLEDB:Database Password={ABjelszó}";
+
+        return new OleDbConnection(kapcsolatiszöveg);
+    }
+
     public static void ABMódosítás(string holvan, string ABjelszó, string SQLszöveg)
     {
         try
         {
-            string kapcsolatiszöveg = "";
-            if (holvan.Contains(".mdb"))
-                kapcsolatiszöveg = $"Provider=Microsoft.Jet.OleDb.4.0;Data Source= '{holvan}'; Jet Oledb:Database Password={ABjelszó}";
-            else
-                kapcsolatiszöveg = $"Provider = Microsoft.ACE.OLEDB.12.0; Data Source ='{holvan}'; Jet OLEDB:Database Password ={ABjelszó}";
-
-            // módosítjuk az adatokat
-            using (OleDbConnection Kapcsolat = new OleDbConnection(kapcsolatiszöveg))
+            using (IDbConnection Kapcsolat = KapcsolatLétrehozás(holvan, ABjelszó))
             {
-                using (OleDbCommand Parancs = new OleDbCommand(SQLszöveg, Kapcsolat))
+                using (IDbCommand Parancs = Kapcsolat.CreateCommand())
                 {
+                    Parancs.CommandText = SQLszöveg;
                     Kapcsolat.Open();
                     Parancs.ExecuteNonQuery();
                 }
@@ -39,26 +43,13 @@ internal static partial class Adatbázis
         }
     }
 
-
-    /// <summary>
-    /// Adatbázisban módosít a küldött szöveg alapján (SQL)
-    /// </summary>
-    /// <param name="holvan"> A fájl elérhetőségének helye </param>
-    /// <param name="ABjelszó"> Adatbázis jelszó </param>
-    /// <param name="SQLszöveg">Lista SQl módosítási szöveg </param>
     public static void ABMódosítás(string holvan, string ABjelszó, List<string> SQLszöveg)
     {
         bool hiba = false;
         string szöveg = "";
         try
         {
-            // módosítjuk az adatokat
-            string kapcsolatiszöveg = "";
-            if (holvan.Contains(".mdb"))
-                kapcsolatiszöveg = $"Provider=Microsoft.Jet.OleDb.4.0;Data Source= '{holvan}'; Jet Oledb:Database Password={ABjelszó}";
-            else
-                kapcsolatiszöveg = $"Provider = Microsoft.ACE.OLEDB.12.0; Data Source ='{holvan}'; Jet OLEDB:Database Password ={ABjelszó}";
-            using (OleDbConnection Kapcsolat = new OleDbConnection(kapcsolatiszöveg))
+            using (IDbConnection Kapcsolat = KapcsolatLétrehozás(holvan, ABjelszó))
             {
                 Kapcsolat.Open();
                 for (int i = 0; i < SQLszöveg.Count; i++)
@@ -66,8 +57,9 @@ internal static partial class Adatbázis
                     try
                     {
                         szöveg = SQLszöveg[i];
-                        using (OleDbCommand Parancs = new OleDbCommand(SQLszöveg[i], Kapcsolat))
+                        using (IDbCommand Parancs = Kapcsolat.CreateCommand())
                         {
+                            Parancs.CommandText = SQLszöveg[i];
                             Parancs.ExecuteNonQuery();
                         }
                     }
@@ -88,27 +80,15 @@ internal static partial class Adatbázis
         if (hiba) throw new Exception("Adatbázis rögzítési hiba, az adotok rögzítése/módosítása nem történt meg.");
     }
 
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="holvan">A fájl elérhetőségének helye </param>
-    /// <param name="ABjelszó">Adatbázis jelszó</param>
-    /// <param name="SQLszöveg">SQl módosítási szöveg </param>
     public static void ABtörlés(string holvan, string ABjelszó, string SQLszöveg)
     {
         try
         {
-            // módosítjuk az adatokat
-            string kapcsolatiszöveg = "";
-            if (holvan.Contains(".mdb"))
-                kapcsolatiszöveg = $"Provider=Microsoft.Jet.OleDb.4.0;Data Source= '{holvan}'; Jet Oledb:Database Password={ABjelszó}";
-            else
-                kapcsolatiszöveg = $"Provider = Microsoft.ACE.OLEDB.12.0; Data Source ='{holvan}'; Jet OLEDB:Database Password ={ABjelszó}";
-            using (OleDbConnection Kapcsolat = new OleDbConnection(kapcsolatiszöveg))
+            using (IDbConnection Kapcsolat = KapcsolatLétrehozás(holvan, ABjelszó))
             {
-                using (OleDbCommand Parancs = new OleDbCommand(SQLszöveg, Kapcsolat))
+                using (IDbCommand Parancs = Kapcsolat.CreateCommand())
                 {
+                    Parancs.CommandText = SQLszöveg;
                     Kapcsolat.Open();
                     Parancs.ExecuteScalar();
                 }
@@ -121,32 +101,20 @@ internal static partial class Adatbázis
         }
     }
 
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="holvan">A fájl elérhetőségének helye </param>
-    /// <param name="ABjelszó">Adatbázis jelszó</param>
-    /// <param name="SQLszöveg">Lista SQl módosítási szöveg </param>
     public static void ABtörlés(string holvan, string ABjelszó, List<string> SQLszöveg)
     {
         try
         {
-            // módosítjuk az adatokat
-            string kapcsolatiszöveg = "";
-            if (holvan.Contains(".mdb"))
-                kapcsolatiszöveg = $"Provider=Microsoft.Jet.OleDb.4.0;Data Source= '{holvan}'; Jet Oledb:Database Password={ABjelszó}";
-            else
-                kapcsolatiszöveg = $"Provider = Microsoft.ACE.OLEDB.12.0; Data Source ='{holvan}'; Jet OLEDB:Database Password ={ABjelszó}";
-            using (OleDbConnection Kapcsolat = new OleDbConnection(kapcsolatiszöveg))
+            using (IDbConnection Kapcsolat = KapcsolatLétrehozás(holvan, ABjelszó))
             {
                 Kapcsolat.Open();
                 for (int i = 0; i < SQLszöveg.Count; i++)
                 {
                     try
                     {
-                        using (OleDbCommand Parancs = new OleDbCommand(SQLszöveg[i], Kapcsolat))
+                        using (IDbCommand Parancs = Kapcsolat.CreateCommand())
                         {
+                            Parancs.CommandText = SQLszöveg[i];
                             Parancs.ExecuteScalar();
                         }
                     }
@@ -165,24 +133,18 @@ internal static partial class Adatbázis
         }
     }
 
-
     public static bool ABvanTábla(string holvan, string ABjelszó, string SQLszöveg)
     {
         bool válasz = false;
         try
         {
-            string kapcsolatiszöveg = "";
-            if (holvan.Contains(".mdb"))
-                kapcsolatiszöveg = "Provider=Microsoft.Jet.OleDb.4.0;Data Source= '" + holvan + "'; Jet Oledb:Database Password=" + ABjelszó;
-            else
-                kapcsolatiszöveg = $"Provider = Microsoft.ACE.OLEDB.12.0; Data Source ='{holvan}'; Jet OLEDB:Database Password ={ABjelszó}";
-
-            using (OleDbConnection Kapcsolat = new OleDbConnection(kapcsolatiszöveg))
+            using (IDbConnection Kapcsolat = KapcsolatLétrehozás(holvan, ABjelszó))
             {
-                using (OleDbCommand Parancs = new OleDbCommand(SQLszöveg, Kapcsolat))
+                using (IDbCommand Parancs = Kapcsolat.CreateCommand())
                 {
+                    Parancs.CommandText = SQLszöveg;
                     Kapcsolat.Open();
-                    using (OleDbDataReader rekord = Parancs.ExecuteReader())
+                    using (IDataReader rekord = Parancs.ExecuteReader())
                     {
                         válasz = true;
                     }
@@ -196,5 +158,4 @@ internal static partial class Adatbázis
             return válasz;
         }
     }
-
 }

@@ -120,6 +120,12 @@ namespace InputForms
             if (rule == null) rule = magyar;
             return Regex.IsMatch((string)Value, "^" + rule + "+$");
         }
+        public bool IsValidNum()
+        {
+            string magyar = @"[0123456789,]";
+            if (rule == null) rule = magyar;
+            return Regex.IsMatch((string)Value, "^" + rule + "+$");
+        }
 
         protected override Control CreateField()
         {

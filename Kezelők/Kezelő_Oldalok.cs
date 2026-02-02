@@ -1,52 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.OleDb;
+using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-
 using MyA = Adatbázis;
 
 namespace VédőEszköz
 {
     public class Kezelő_Oldalok
     {
-        readonly string hely = $@"{Application.StartupPath}\VédőAdatok\Új_Belépés.mdb";
+        readonly string hely = $@"{Application.StartupPath}\VédőAdatok\Új_Belépés.db";
         readonly string jelszó = "ForgalmiUtasítás";
         readonly string táblanév = "Tábla_Oldalak";
 
+        private bool IsSQLite => Path.GetExtension(hely).ToLower() == ".db" || Path.GetExtension(hely).ToLower() == ".sqlite";
+
         public Kezelő_Oldalok()
         {
-            if (!File.Exists(hely)) Adatbázis_Létrehozás.Adatbázis_Oldalak(hely.KönyvSzerk());
+            if (!File.Exists(hely)) Adatbázis_Létrehozás.Adatbázis_Oldalak(hely);
             if (!AdatBázis_kezelés.TáblaEllenőrzés(hely, jelszó, táblanév)) Adatbázis_Létrehozás.Adatbázis_Oldalak(hely);
+        }
+
+        private IDbConnection KapcsolatLétrehozás()
+        {
+            if (IsSQLite)
+                return new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};");
+
+            return new OleDbConnection($"Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{hely}';Jet Oledb:Database Password={jelszó}");
         }
 
         public List<Adat_Oldalak> Lista_Adatok()
         {
             List<Adat_Oldalak> Adatok = new List<Adat_Oldalak>();
             string szöveg = $"SELECT * FROM {táblanév}";
-            string kapcsolatiszöveg = $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{hely}'; Jet Oledb:Database Password={jelszó}";
 
-            using (OleDbConnection Kapcsolat = new OleDbConnection(kapcsolatiszöveg))
+            using (IDbConnection Kapcsolat = KapcsolatLétrehozás())
             {
-                using (OleDbCommand Parancs = new OleDbCommand(szöveg, Kapcsolat))
+                using (IDbCommand Parancs = Kapcsolat.CreateCommand())
                 {
+                    Parancs.CommandText = szöveg;
                     Kapcsolat.Open();
-                    using (OleDbDataReader rekord = Parancs.ExecuteReader())
+                    using (IDataReader rekord = Parancs.ExecuteReader())
                     {
-                        if (rekord.HasRows)
+                        while (rekord.Read())
                         {
-                            while (rekord.Read())
-                            {
-                                Adat_Oldalak Adat = new Adat_Oldalak(
-                                        rekord["OldalId"].ToÉrt_Int(),
-                                        rekord["FromName"].ToStrTrim(),
-                                        rekord["MenuName"].ToStrTrim(),
-                                        rekord["MenuFelirat"].ToStrTrim(),
-                                        rekord["Látható"].ToÉrt_Bool(),
-                                        rekord["Törölt"].ToÉrt_Bool());
-                                Adatok.Add(Adat);
-                            }
+                            Adat_Oldalak Adat = new Adat_Oldalak(
+                                    rekord["OldalId"].ToÉrt_Int(),
+                                    rekord["FromName"].ToStrTrim(),
+                                    rekord["MenuName"].ToStrTrim(),
+                                    rekord["MenuFelirat"].ToStrTrim(),
+                                    rekord["Látható"].ToÉrt_Bool(),
+                                    rekord["Törölt"].ToÉrt_Bool());
+                            Adatok.Add(Adat);
                         }
                     }
                 }
@@ -63,7 +71,6 @@ namespace VédőEszköz
                     Rögzítés(Adat);
                 else
                     Módosítás(Adat);
-
             }
             catch (HibásBevittAdat ex)
             {
@@ -80,8 +87,12 @@ namespace VédőEszköz
         {
             try
             {
+                // SQLite esetén a logikai értékeket gyakran 0/1-ként tároljuk
+                string lathato = IsSQLite ? (Adat.Látható ? "1" : "0") : Adat.Látható.ToString();
+                string torolt = IsSQLite ? (Adat.Törölt ? "1" : "0") : Adat.Törölt.ToString();
+
                 string szöveg = $"INSERT INTO {táblanév} (FromName, MenuName, MenuFelirat, Látható, Törölt) VALUES (";
-                szöveg += $"'{Adat.FromName}', '{Adat.MenuName}', '{Adat.MenuFelirat}', {Adat.Látható}, {Adat.Törölt})";
+                szöveg += $"'{Adat.FromName}', '{Adat.MenuName}', '{Adat.MenuFelirat}', {lathato}, {torolt})";
                 MyA.ABMódosítás(hely, jelszó, szöveg);
             }
             catch (HibásBevittAdat ex)
@@ -99,12 +110,15 @@ namespace VédőEszköz
         {
             try
             {
+                string lathato = IsSQLite ? (Adat.Látható ? "1" : "0") : Adat.Látható.ToString();
+                string torolt = IsSQLite ? (Adat.Törölt ? "1" : "0") : Adat.Törölt.ToString();
+
                 string szöveg = $"UPDATE {táblanév} SET ";
                 szöveg += $"FromName ='{Adat.FromName}', ";
                 szöveg += $"MenuName ='{Adat.MenuName}', ";
                 szöveg += $"MenuFelirat ='{Adat.MenuFelirat}', ";
-                szöveg += $"Látható ={Adat.Látható}, ";
-                szöveg += $"Törölt ={Adat.Törölt} ";
+                szöveg += $"Látható ={lathato}, ";
+                szöveg += $"Törölt ={torolt} ";
                 szöveg += $"WHERE OldalId = {Adat.OldalId}";
                 MyA.ABMódosítás(hely, jelszó, szöveg);
             }

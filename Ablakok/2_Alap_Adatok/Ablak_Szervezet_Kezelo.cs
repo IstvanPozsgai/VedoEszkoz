@@ -1,90 +1,56 @@
 ﻿using InputForms;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
-
 namespace VédőEszköz
-
 {
-    public class Ablak_Szervezet_Kezelo
+    public partial class Ablak_Szervezet_Kezelo : Form
     {
         InputForm form;
-        Form Ablak;
+        readonly Kezelő_Szervezet KézSzervezet = new Kezelő_Szervezet();
+        public Action FrissítésCallBack;
 
-        InputTextbox TxtSzervezet;
-        InputTextbox TxtRovidNev;
-        InputSelect CmbStatus;
-
-        public void Kezelés(Adat_Szervezet Adat, Action FrissitesCallback)
+        public void Kezelés(Adat_Szervezet adat = null)
         {
-            int id = Adat?.Id ?? 0;
-            string nev = Adat?.Szervezet ?? "";
-            string rovid = "";
-            //Adat?.RovidNev ?? ""; 
+            List<Adat_Szervezet> adatok = KézSzervezet.Lista_Adatok();
+            bool UjAdat = adat == null;
 
-            string status = (Adat != null && Adat.Státus) ? "Törölt" : "Aktív";
+            int ujId = adatok.Any() ? adatok.Max(a => a.Id) + 1 : 1;
+            int id = UjAdat ? ujId : adat.Id;
 
-            Ablak = new Form();
-            form = new InputForm(Ablak);
-            Kezelő_Szervezet Kezelő = new Kezelő_Szervezet();
+            string[] szervezetek = adatok
+                .Select(a => a.Szervezet)
+                .Distinct()
+                .ToArray();
 
-            TxtSzervezet = new InputTextbox("Szervezet neve:", nev).SetWidth(350).SetHeight(26);
-            TxtRovidNev = new InputTextbox("Rövid név:", rovid).SetWidth(150).SetHeight(26);
-            CmbStatus = new InputSelect("Státusz:", new string[] { "Aktív", "Törölt" }, 15);
-
-            CmbStatus.Value = status;
-
-            form.Add("Szervezet", TxtSzervezet)
-                .Add("Rovid", TxtRovidNev)
-                .Add("Status", CmbStatus)
+            form = new InputForm(this);
+            form.Add("Sorszám", (new InputTextbox("Sorszám:", id.ToStrTrim())).AddRule(null))
+                .Add("Szervezet", (new InputSelect("Szervezet neve:", szervezetek)))
+                  .Add("Státus", (new InputTextbox("Státusz:", UjAdat ? "Aktív" : (adat.Státus ? "Aktív" : "Inaktív"))).AddRule(null))
                 .MoveTo(10, 10)
                 .FieldIgazítás()
-                .SetButton("Rögzít")
+                .SetButton("Mentés")
                 .OnSubmit(() =>
                 {
-                    MentésFolyamat(id, Kezelő, FrissitesCallback);
+                    int idInt = int.Parse(form["Sorszám"]);
+                    string szervezetNev = form["Szervezet"];
+                    bool statusz = form["Státus"] == "Aktív";
+                    Adat_Szervezet ADAT = new Adat_Szervezet(
+                        idInt,
+                        szervezetNev,
+                        statusz
+                    );
+
+                    if (UjAdat)
+                        KézSzervezet.Rögzítés(ADAT);
+                    else
+                        KézSzervezet.Módosítás(ADAT);
+
+                    FrissítésCallBack?.Invoke();
+                    this.Close();
                 });
-
-            Ablak.Width = form.Width + 40;
-            Ablak.Height = form.Height + 80;
-            Ablak.Text = (id == 0) ? "Új Szervezet felvitele" : "Szervezet módosítása";
-            //Ablak.Icon = Properties.Resources.ProgramIkon;
-            Ablak.StartPosition = FormStartPosition.CenterScreen;
-            Ablak.FormBorderStyle = FormBorderStyle.FixedDialog;
-            Ablak.MaximizeBox = false;
-
-            Ablak.ShowDialog();
-        }
-
-        private void MentésFolyamat(int id, Kezelő_Szervezet kezelo, Action frissitesCallback)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(TxtSzervezet.Value.ToString()))
-                    throw new Exception("A szervezet nevét kötelező kitölteni!");
-
-                string ujNev = TxtSzervezet.Value.ToString();
-                string ujRovid = TxtRovidNev.Value.ToString();
-                bool torolt = CmbStatus.Value.ToString() == "Törölt";
-
-                Adat_Szervezet rekord = new Adat_Szervezet(id, ujNev, torolt);
-
-                kezelo.Döntés(rekord);
-
-                MessageBox.Show("Sikeres mentés!", "Infó", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                frissitesCallback?.Invoke();
-                Ablak.Close();
-            }
-            catch (HibásBevittAdat ex)
-            {
-                MessageBox.Show(ex.Message, "Információ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
     }
 }

@@ -1,29 +1,40 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Data.OleDb;
+using System.Data.SQLite;
 using System.IO;
 using VédőEszköz;
 
-
 public static partial class AdatBázis_kezelés
 {
+    private static bool IsSQLite(string hely) =>
+        hely.ToLower().EndsWith(".db") || hely.ToLower().EndsWith(".sqlite");
+
+    private static IDbConnection KapcsolatLétrehozás(string hely, string jelszó)
+    {
+        if (IsSQLite(hely))
+            return new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};");
+
+        string kapcsolatiszöveg = hely.Contains(".mdb")
+            ? $"Provider=Microsoft.Jet.OleDb.4.0;Data Source='{hely}';Jet Oledb:Database Password={jelszó};"
+            : $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source='{hely}';Jet OLEDB:Database Password={jelszó};";
+
+        return new OleDbConnection(kapcsolatiszöveg);
+    }
+
     public static void AB_Adat_Tábla_Létrehozás(string hely, string jelszó, string szöveg, string táblanév)
     {
         try
         {
-            if (TáblaEllenőrzés(hely, jelszó, táblanév)) return; //ha létezik a tábla akkor nem csinál semmit
-            string kapcsolatiszöveg = "";
-            if (hely.Contains(".mdb"))
-                kapcsolatiszöveg = $"Provider=Microsoft.Jet.OleDb.4.0;Data Source= '{hely}'; Jet Oledb:Database Password={jelszó};";
-            else
-                kapcsolatiszöveg = $"Provider = Microsoft.ACE.OLEDB.12.0; Data Source ='{hely}'; Jet OLEDB:Database Password ={jelszó};";
-            using (OleDbConnection Kapcsolat = new OleDbConnection(kapcsolatiszöveg))
+            if (TáblaEllenőrzés(hely, jelszó, táblanév)) return;
+
+            using (IDbConnection Kapcsolat = KapcsolatLétrehozás(hely, jelszó))
             {
-                using (OleDbCommand cmdCreate = new OleDbCommand())
+                using (IDbCommand cmd = Kapcsolat.CreateCommand())
                 {
-                    cmdCreate.Connection = Kapcsolat;
-                    cmdCreate.CommandText = szöveg;
+                    cmd.CommandText = szöveg;
                     Kapcsolat.Open();
-                    cmdCreate.ExecuteNonQuery();
+                    cmd.ExecuteNonQuery();
                 }
             }
         }
@@ -37,20 +48,24 @@ public static partial class AdatBázis_kezelés
     {
         try
         {
-            if (File.Exists(hely)) return;       // Ha van ilyen fájl, akkor nem hozza létre ismételten
-            ADOX.Catalog cat = new ADOX.Catalog();
-            string kapcsolatiszöveg = "";
-            if (hely.Contains(".mdb"))
-                kapcsolatiszöveg = $"Provider=Microsoft.Jet.OleDb.4.0;Data Source= '{hely}'; Jet Oledb:Database Password={jelszó};";
+            if (File.Exists(hely)) return;
+
+            if (IsSQLite(hely))
+            {
+                SQLiteConnection.CreateFile(hely);
+            }
             else
-                kapcsolatiszöveg = $"Provider = Microsoft.ACE.OLEDB.12.0; Data Source ='{hely}'; Jet OLEDB:Database Password ={jelszó};";
+            {
+                ADOX.Catalog cat = new ADOX.Catalog();
+                string kapcsolatiszöveg = hely.Contains(".mdb")
+                    ? $"Provider=Microsoft.Jet.OleDb.4.0;Data Source='{hely}';Jet Oledb:Database Password={jelszó};"
+                    : $"Provider=Microsoft.ACE.OLEDB.12.0;Data Source='{hely}';Jet OLEDB:Database Password={jelszó};";
 
-            cat.Create(kapcsolatiszöveg);
+                cat.Create(kapcsolatiszöveg);
 
-            //Now Close the database
-            if (cat.ActiveConnection is ADODB.Connection con)
-                con.Close();
-
+                if (cat.ActiveConnection is ADODB.Connection con)
+                    con.Close();
+            }
         }
         catch (System.Exception ex)
         {
@@ -62,24 +77,17 @@ public static partial class AdatBázis_kezelés
     {
         try
         {
-            string kapcsolatiszöveg = "";
-            if (hely.Contains(".mdb"))
-                kapcsolatiszöveg = $"Provider=Microsoft.Jet.OleDb.4.0;Data Source= '{hely}'; Jet Oledb:Database Password={jelszó};";
-            else
-                kapcsolatiszöveg = $"Provider = Microsoft.ACE.OLEDB.12.0; Data Source ='{hely}'; Jet OLEDB:Database Password ={jelszó};";
-            using (OleDbConnection Kapcsolat = new OleDbConnection(kapcsolatiszöveg))
+            using (IDbConnection Kapcsolat = KapcsolatLétrehozás(hely, jelszó))
             {
-                using (OleDbCommand cmdCreate = new OleDbCommand())
+                using (IDbCommand cmd = Kapcsolat.CreateCommand())
                 {
                     string szöveg = $"ALTER TABLE {Tábla} ADD COLUMN {Oszlop} {Típus} ";
-                    cmdCreate.Connection = Kapcsolat;
-                    cmdCreate.CommandText = szöveg;
+                    cmd.CommandText = szöveg;
                     Kapcsolat.Open();
-                    cmdCreate.ExecuteNonQuery();
+                    cmd.ExecuteNonQuery();
                 }
             }
         }
-
         catch (System.Exception ex)
         {
             HibaNapló.Log(ex.Message, "AB_Új_Oszlop", ex.StackTrace, ex.Source, ex.HResult);
@@ -89,31 +97,38 @@ public static partial class AdatBázis_kezelés
     public static bool TáblaEllenőrzés(string hely, string jelszó, string táblanév)
     {
         bool válasz = false;
-        string kapcsolatiszöveg;
-        if (hely.Contains(".mdb"))
-            kapcsolatiszöveg = $"Provider=Microsoft.Jet.OleDb.4.0;Data Source= '{hely}'; Jet Oledb:Database Password={jelszó};";
-        else
-            kapcsolatiszöveg = $"Provider = Microsoft.ACE.OLEDB.12.0; Data Source ='{hely}'; Jet OLEDB:Database Password ={jelszó};";
-
-        using (OleDbConnection connection = new OleDbConnection(kapcsolatiszöveg))
+        try
         {
-            connection.Open();
-            DataTable schemaTable = connection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
-
-            foreach (DataRow row in schemaTable.Rows)
+            using (IDbConnection connection = KapcsolatLétrehozás(hely, jelszó))
             {
-                string tábla = row["TABLE_NAME"].ToString();
-                if (row["TABLE_NAME"].ToString() == táblanév)
+                connection.Open();
+
+                if (connection is SQLiteConnection sqliteConn)
                 {
-                    válasz = true;
-                    break;
+                    using (var cmd = new SQLiteCommand("SELECT name FROM sqlite_master WHERE type='table' AND name=@name", sqliteConn))
+                    {
+                        cmd.Parameters.AddWithValue("@name", táblanév);
+                        var result = cmd.ExecuteScalar();
+                        return result != null;
+                    }
                 }
-
+                else if (connection is OleDbConnection oledbConn)
+                {
+                    DataTable schemaTable = oledbConn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
+                    foreach (DataRow row in schemaTable.Rows)
+                    {
+                        if (row["TABLE_NAME"].ToString() == táblanév)
+                        {
+                            válasz = true;
+                            break;
+                        }
+                    }
+                }
             }
-
+        }
+        catch (Exception ex)
+        {
         }
         return válasz;
     }
 }
-
-
