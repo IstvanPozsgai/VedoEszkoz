@@ -17,6 +17,7 @@ namespace VédőEszköz
         public bool GlobalAdmin { get; private set; }
         public bool TelepAdmin { get; private set; }
 
+        // Teljes konstruktor - SQLite olvasásakor a bool értékeket konvertálva adjuk át
         public Adat_Users(
             int userId,
             string userName,
@@ -51,5 +52,12 @@ namespace VédőEszköz
             Password = password;
             Frissít = frissít;
         }
+
+        public int FrissítInt => Frissít ? 1 : 0;
+        public int TöröltInt => Törölt ? 1 : 0;
+        public int GlobalAdminInt => GlobalAdmin ? 1 : 0;
+        public int TelepAdminInt => TelepAdmin ? 1 : 0;
+
+        public string DátumSQL => Dátum.ToString("yyyy-MM-dd HH:mm:ss");
     }
 }

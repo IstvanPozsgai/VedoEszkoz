@@ -29,6 +29,7 @@ namespace VédőEszköz
         #region Alap
         public AblakBejelentkezés()
         {
+            SQLitePCL.Batteries.Init();
             InitializeComponent();
             Start();
         }

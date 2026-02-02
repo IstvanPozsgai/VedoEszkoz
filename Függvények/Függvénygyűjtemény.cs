@@ -75,7 +75,7 @@ namespace VédőEszköz
             string újszó;
             újszó = ((char)(122 - hossz)).ToString();
             for (int i = 1, loopTo = hossz; i <= loopTo; i++)
-                újszó += ((char)(65 + Convert.ToInt32(jelszó.Substring(i - 1, 1)) - i)).ToString();
+                újszó += ((char)(65 + (jelszó.Substring(i - 1, 1)) - i)).ToString();
             string ford = "";
             for (int i = újszó.Length; i >= 1; i -= 1)
                 ford += újszó.Substring(i - 1, 1);
@@ -89,18 +89,18 @@ namespace VédőEszköz
             string újszó = "";
             string eredmény;
             int érték;
-            újszó += ((char)(Convert.ToInt32(rnd.Next(1, 11)) + 97)).ToString();
-            újszó += ((char)(Convert.ToInt32(rnd.Next(1, 11)) + 97)).ToString();
+            újszó += ((char)((rnd.Next(1, 11)) + 97)).ToString();
+            újszó += ((char)((rnd.Next(1, 11)) + 97)).ToString();
             újszó += ((char)(122 - hossz)).ToString();
             for (int i = 1; i <= hossz; i++)
             {
                 eredmény = jelszó.Substring(i - 1, 1);
-                érték = Convert.ToInt32(eredmény);
+                érték = (eredmény);
                 újszó += ((char)(65 + érték - i)).ToString();
             }
             // kitölti 20 karakterig
             for (int i = újszó.Length; i <= 19; i++)
-                újszó += ((char)(Convert.ToInt32(rnd.Next(1, 11)) + 97)).ToString();
+                újszó += ((char)((rnd.Next(1, 11)) + 97)).ToString();
             string ford = "";
             for (int i = 20; i >= 1; i -= 1)
                 ford += újszó.Substring(i - 1, 1);
@@ -144,8 +144,8 @@ namespace VédőEszköz
             int hossz = jelszó.Length;
             jelszó = jelszó.ToUpper();
             string újszó = "";
-            újszó += ((char)(Convert.ToInt32(rnd.Next(100) * 10) + 47)).ToString(); //kamu
-            újszó += ((char)(Convert.ToInt32(rnd.Next(100) * 10) + 97)).ToString(); //kamu
+            újszó += ((char)((rnd.Next(100) * 10) + 47)).ToString(); //kamu
+            újszó += ((char)((rnd.Next(100) * 10) + 97)).ToString(); //kamu
             újszó += ((char)(122 - hossz)).ToString();
             for (int i = 1; i <= hossz; i++)
             {
@@ -157,7 +157,7 @@ namespace VédőEszköz
             }
             // kitölti 25 karakterig
             for (int i = újszó.Length; i <= 24; i++)
-                újszó += ((char)(int)Convert.ToInt32(rnd.Next(100) * 10) + 97).ToString();
+                újszó += ((char)(int)(rnd.Next(100) * 10) + 97).ToString();
             string ford = "";
             for (int i = 25; i >= 1; i -= 1)
                 ford += újszó.Substring(i - 1, 1);
@@ -196,14 +196,14 @@ namespace VédőEszköz
             jelszó = jelszó.ToUpper();
             string újszó = "";
 
-            újszó += ((char)(Convert.ToInt32(rnd.Next(100) * 10) + 97)).ToString();
-            újszó += ((char)(Convert.ToInt32(rnd.Next(100) * 10) + 97)).ToString();
+            újszó += ((char)((rnd.Next(100) * 10) + 97)).ToString();
+            újszó += ((char)((rnd.Next(100) * 10) + 97)).ToString();
             újszó += ((char)(122 - hossz)).ToString();
 
             for (int i = 1, loopTo = hossz; i <= loopTo; i++)
             {
                 char egybetű = Convert.ToChar(jelszó.Substring(i - 1, 1));
-                int Betű = Convert.ToInt32(egybetű);
+                int Betű = (egybetű);
                 újszó += ((char)(Betű + i - 15)).ToString();
             }
             string ford = "";
