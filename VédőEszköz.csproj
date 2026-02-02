@@ -231,7 +231,7 @@
     <Compile Include="Input_Forms\InputSelect.cs" />
     <Compile Include="Input_Forms\InputTextbox.cs" />
     <Compile Include="Input_Forms\InputTime.cs" />
-    <Compile Include="Kezelők\Kezelők_Jogosultságok.cs" />
+    <Compile Include="Kezelők\Kezelő_Jogosultságok.cs" />
     <Compile Include="Kezelők\Kezelő_Behajtás_Dolgozótábla.cs" />
     <Compile Include="Kezelők\Kezelő_Belépés_Jogosultságtábla.cs" />
     <Compile Include="Kezelők\Kezelő_Belépés_MindenMásol.cs" />

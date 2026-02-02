@@ -131,6 +131,16 @@ public static class FVGyűjtemény
             válasz = false;
         return válasz;
     }
+    public static bool ToÉrt_BoolSQLite(this object str)
+    {
+        string ertek = str.ToStrTrim();
+        if (ertek == "1") return true;
+        if (ertek == "0") return false; 
+
+        if (!bool.TryParse(ertek, out bool válasz))
+            válasz = false;
+        return válasz;
+    }
     /// <summary>
     ///  Szöveget alakít át BOOL abban az esetben, ha nem jó értéket kap 0-val tér vissza
     /// </summary>
