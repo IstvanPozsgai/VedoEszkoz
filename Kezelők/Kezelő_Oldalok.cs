@@ -16,7 +16,7 @@ namespace VédőEszköz
         readonly string jelszó = "ForgalmiUtasítás";
         readonly string táblanév = "Tábla_Oldalak";
 
-        private bool IsSQLite => Path.GetExtension(hely).ToLower() == ".db" || Path.GetExtension(hely).ToLower() == ".sqlite";
+        private bool IsSQLite => Path.GetExtension(hely).ToLower() == ".db";
 
         public Kezelő_Oldalok()
         {
@@ -29,19 +29,17 @@ namespace VédőEszköz
             if (IsSQLite)
                 return new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};");
 
-            return new OleDbConnection($"Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{hely}';Jet Oledb:Database Password={jelszó}");
+            return new OleDbConnection($"Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{hely}'; Jet Oledb:Database Password={jelszó}");
         }
 
         public List<Adat_Oldalak> Lista_Adatok()
         {
             List<Adat_Oldalak> Adatok = new List<Adat_Oldalak>();
-            string szöveg = $"SELECT * FROM {táblanév}";
-
             using (IDbConnection Kapcsolat = KapcsolatLétrehozás())
             {
                 using (IDbCommand Parancs = Kapcsolat.CreateCommand())
                 {
-                    Parancs.CommandText = szöveg;
+                    Parancs.CommandText = $"SELECT * FROM {táblanév}";
                     Kapcsolat.Open();
                     using (IDataReader rekord = Parancs.ExecuteReader())
                     {
@@ -62,74 +60,21 @@ namespace VédőEszköz
             return Adatok;
         }
 
-        public void Döntés(Adat_Oldalak Adat)
-        {
-            try
-            {
-                List<Adat_Oldalak> Adatok = Lista_Adatok();
-                if (!Adatok.Any(a => a.OldalId == Adat.OldalId))
-                    Rögzítés(Adat);
-                else
-                    Módosítás(Adat);
-            }
-            catch (HibásBevittAdat ex)
-            {
-                MessageBox.Show(ex.Message, "Információ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
         public void Rögzítés(Adat_Oldalak Adat)
         {
             try
             {
-                // SQLite esetén a logikai értékeket gyakran 0/1-ként tároljuk
-                string lathato = IsSQLite ? (Adat.Látható ? "1" : "0") : Adat.Látható.ToString();
-                string torolt = IsSQLite ? (Adat.Törölt ? "1" : "0") : Adat.Törölt.ToString();
+                string L = IsSQLite ? (Adat.Látható ? "1" : "0") : Adat.Látható.ToString();
+                string T = IsSQLite ? (Adat.Törölt ? "1" : "0") : Adat.Törölt.ToString();
 
                 string szöveg = $"INSERT INTO {táblanév} (FromName, MenuName, MenuFelirat, Látható, Törölt) VALUES (";
-                szöveg += $"'{Adat.FromName}', '{Adat.MenuName}', '{Adat.MenuFelirat}', {lathato}, {torolt})";
+                szöveg += $"'{Adat.FromName}', '{Adat.MenuName}', '{Adat.MenuFelirat}', {L}, {T})";
                 MyA.ABMódosítás(hely, jelszó, szöveg);
-            }
-            catch (HibásBevittAdat ex)
-            {
-                MessageBox.Show(ex.Message, "Információ", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        public void Módosítás(Adat_Oldalak Adat)
-        {
-            try
-            {
-                string lathato = IsSQLite ? (Adat.Látható ? "1" : "0") : Adat.Látható.ToString();
-                string torolt = IsSQLite ? (Adat.Törölt ? "1" : "0") : Adat.Törölt.ToString();
-
-                string szöveg = $"UPDATE {táblanév} SET ";
-                szöveg += $"FromName ='{Adat.FromName}', ";
-                szöveg += $"MenuName ='{Adat.MenuName}', ";
-                szöveg += $"MenuFelirat ='{Adat.MenuFelirat}', ";
-                szöveg += $"Látható ={lathato}, ";
-                szöveg += $"Törölt ={torolt} ";
-                szöveg += $"WHERE OldalId = {Adat.OldalId}";
-                MyA.ABMódosítás(hely, jelszó, szöveg);
-            }
-            catch (HibásBevittAdat ex)
-            {
-                MessageBox.Show(ex.Message, "Információ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

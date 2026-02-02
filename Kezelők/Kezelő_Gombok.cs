@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.OleDb;
+using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -10,43 +12,62 @@ namespace VédőEszköz
 {
     public class Kezelő_Gombok
     {
-        readonly string hely = $@"{Application.StartupPath}\VédőAdatok\ÚJ_Belépés.mdb";
+        readonly string hely;
         readonly string jelszó = "ForgalmiUtasítás";
         readonly string táblanév = "Tábla_Gombok";
 
+        private bool IsSQLite => Path.GetExtension(hely).ToLower() == ".db" || Path.GetExtension(hely).ToLower() == ".sqlite";
+
         public Kezelő_Gombok()
         {
-            if (!File.Exists(hely)) Adatbázis_Létrehozás.Adatbázis_Gombok(hely.KönyvSzerk());
-            if (!AdatBázis_kezelés.TáblaEllenőrzés(hely, jelszó, táblanév)) Adatbázis_Létrehozás.Adatbázis_Gombok(hely);
+            string alapUtvonal = $@"{Application.StartupPath}\VédőAdatok\ÚJ_Belépés";
+
+            if (File.Exists(alapUtvonal + ".db"))
+                hely = alapUtvonal + ".db";
+            else if (File.Exists(alapUtvonal + ".mdb"))
+                hely = alapUtvonal + ".mdb";
+            else
+            {
+                hely = alapUtvonal + ".mdb";
+                Adatbázis_Létrehozás.Adatbázis_Gombok(hely);
+            }
+
+            if (!AdatBázis_kezelés.TáblaEllenőrzés(hely, jelszó, táblanév))
+                Adatbázis_Létrehozás.Adatbázis_Gombok(hely);
+        }
+
+        private IDbConnection KapcsolatLétrehozás()
+        {
+            if (IsSQLite)
+                return new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};");
+
+            return new OleDbConnection($"Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{hely}'; Jet Oledb:Database Password={jelszó}");
         }
 
         public List<Adat_Gombok> Lista_Adatok()
         {
             List<Adat_Gombok> Adatok = new List<Adat_Gombok>();
             string szöveg = $"SELECT * FROM {táblanév}";
-            string kapcsolatiszöveg = $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{hely}'; Jet Oledb:Database Password={jelszó}";
 
-            using (OleDbConnection Kapcsolat = new OleDbConnection(kapcsolatiszöveg))
+            using (IDbConnection Kapcsolat = KapcsolatLétrehozás())
             {
-                using (OleDbCommand Parancs = new OleDbCommand(szöveg, Kapcsolat))
+                using (IDbCommand Parancs = Kapcsolat.CreateCommand())
                 {
+                    Parancs.CommandText = szöveg;
                     Kapcsolat.Open();
-                    using (OleDbDataReader rekord = Parancs.ExecuteReader())
+                    using (IDataReader rekord = Parancs.ExecuteReader())
                     {
-                        if (rekord.HasRows)
+                        while (rekord.Read())
                         {
-                            while (rekord.Read())
-                            {
-                                Adat_Gombok Adat = new Adat_Gombok(
-                                        rekord["GombokId"].ToÉrt_Int(),
-                                        rekord["FromName"].ToStrTrim(),
-                                        rekord["GombName"].ToStrTrim(),
-                                        rekord["GombFelirat"].ToStrTrim(),
-                                        rekord["Szervezet"].ToStrTrim(),
-                                        rekord["Látható"].ToÉrt_Bool(),
-                                        rekord["Törölt"].ToÉrt_Bool());
-                                Adatok.Add(Adat);
-                            }
+                            Adat_Gombok Adat = new Adat_Gombok(
+                                    rekord["GombokId"].ToÉrt_Int(),
+                                    rekord["FromName"].ToStrTrim(),
+                                    rekord["GombName"].ToStrTrim(),
+                                    rekord["GombFelirat"].ToStrTrim(),
+                                    rekord["Szervezet"].ToStrTrim(),
+                                    rekord["Látható"].ToÉrt_Bool(),
+                                    rekord["Törölt"].ToÉrt_Bool());
+                            Adatok.Add(Adat);
                         }
                     }
                 }
@@ -59,7 +80,6 @@ namespace VédőEszköz
             try
             {
                 List<Adat_Gombok> Adatok = Lista_Adatok();
-                // Ha van ilyen gomb már a lapon akkor nem engedjük rögzíteni
                 Adat_Gombok gomb = (from a in Adatok
                                     where a.GombName == Adat.GombName
                                     && a.FromName == Adat.FromName
@@ -69,7 +89,6 @@ namespace VédőEszköz
                     Rögzítés(Adat);
                 else
                 {
-                    // csak törölni és láthatóságot és szöveget engedjük módosítani
                     Adat_Gombok gomb1 = (from a in Adatok
                                          where a.GombName == Adat.GombName
                                          && a.FromName == Adat.FromName
@@ -79,11 +98,9 @@ namespace VédőEszköz
                         Módosítás(Adat);
                     else
                     {
-                        // JAVÍTANDÓ:
                         throw new HibásBevittAdat($"Ez a {gomb1.GombokId} szám alatt már szerepel!");
                     }
                 }
-
             }
             catch (HibásBevittAdat ex)
             {
@@ -100,8 +117,12 @@ namespace VédőEszköz
         {
             try
             {
-                string szöveg = $"INSERT INTO {táblanév} (  FromName, GombName, GombFelirat, Szervezet, Látható, Törölt) VALUES (";
-                szöveg += $"'{Adat.FromName}', '{Adat.GombName}', '{Adat.GombFelirat}', '{Adat.Szervezet}', {Adat.Látható}, {Adat.Törölt})";
+                // SQLite esetén 1/0, MDB esetén True/False használatos
+                string lathato = IsSQLite ? (Adat.Látható ? "1" : "0") : Adat.Látható.ToString();
+                string torolt = IsSQLite ? (Adat.Törölt ? "1" : "0") : Adat.Törölt.ToString();
+
+                string szöveg = $"INSERT INTO {táblanév} (FromName, GombName, GombFelirat, Szervezet, Látható, Törölt) VALUES (";
+                szöveg += $"'{Adat.FromName}', '{Adat.GombName}', '{Adat.GombFelirat}', '{Adat.Szervezet}', {lathato}, {torolt})";
                 MyA.ABMódosítás(hely, jelszó, szöveg);
             }
             catch (HibásBevittAdat ex)
@@ -119,13 +140,16 @@ namespace VédőEszköz
         {
             try
             {
+                string lathato = IsSQLite ? (Adat.Látható ? "1" : "0") : Adat.Látható.ToString();
+                string torolt = IsSQLite ? (Adat.Törölt ? "1" : "0") : Adat.Törölt.ToString();
+
                 string szöveg = $"UPDATE {táblanév} SET ";
                 szöveg += $"FromName ='{Adat.FromName}', ";
                 szöveg += $"GombName ='{Adat.GombName}', ";
                 szöveg += $"GombFelirat ='{Adat.GombFelirat}', ";
                 szöveg += $"Szervezet ='{Adat.Szervezet}', ";
-                szöveg += $"Látható ={Adat.Látható}, ";
-                szöveg += $"Törölt ={Adat.Törölt} ";
+                szöveg += $"Látható ={lathato}, ";
+                szöveg += $"Törölt ={torolt} ";
                 szöveg += $"WHERE GombokId = {Adat.GombokId}";
                 MyA.ABMódosítás(hely, jelszó, szöveg);
             }
