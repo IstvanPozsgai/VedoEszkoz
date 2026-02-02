@@ -72,10 +72,15 @@ namespace VédőEszköz
         public static string Rövidkód(string jelszó)
         {
             int hossz = jelszó.Length;
-            string újszó;
-            újszó = ((char)(122 - hossz)).ToString();
-            for (int i = 1, loopTo = hossz; i <= loopTo; i++)
-                újszó += ((char)(65 + (jelszó.Substring(i - 1, 1)) - i)).ToString();
+            string újszó = ((char)(122 - hossz)).ToString();
+
+            for (int i = 1; i <= hossz; i++)
+            {
+                // Kinyerjük az i-edik karaktert, ASCII kóddá alakítjuk (int), elvégezzük a matekot, majd vissza char-ba
+                char c = Convert.ToChar(jelszó.Substring(i - 1, 1));
+                újszó += ((char)(65 + (int)c - i)).ToString();
+            }
+
             string ford = "";
             for (int i = újszó.Length; i >= 1; i -= 1)
                 ford += újszó.Substring(i - 1, 1);
@@ -87,20 +92,23 @@ namespace VédőEszköz
             Random rnd = new Random(100);
             int hossz = jelszó.Length;
             string újszó = "";
-            string eredmény;
-            int érték;
+
             újszó += ((char)((rnd.Next(1, 11)) + 97)).ToString();
             újszó += ((char)((rnd.Next(1, 11)) + 97)).ToString();
             újszó += ((char)(122 - hossz)).ToString();
+
             for (int i = 1; i <= hossz; i++)
             {
-                eredmény = jelszó.Substring(i - 1, 1);
-                érték = (eredmény);
+                // A Substring(i-1, 1) egy stringet ad vissza, amit char-rá kell alakítani a matematikai művelethez
+                char c = Convert.ToChar(jelszó.Substring(i - 1, 1));
+                int érték = (int)c;
                 újszó += ((char)(65 + érték - i)).ToString();
             }
+
             // kitölti 20 karakterig
             for (int i = újszó.Length; i <= 19; i++)
                 újszó += ((char)((rnd.Next(1, 11)) + 97)).ToString();
+
             string ford = "";
             for (int i = 20; i >= 1; i -= 1)
                 ford += újszó.Substring(i - 1, 1);
@@ -112,29 +120,29 @@ namespace VédőEszköz
             string ford = "";
             int hossz;
             string újjelszó = "";
-            if (áljelszó.Length > 0)
+
+            if (!string.IsNullOrEmpty(áljelszó) && áljelszó.Length >= 20)
             {
                 for (int i = 20; i >= 1; i -= 1)
                     ford += áljelszó.Substring(i - 1, 1);
 
+                // Az ASC segédfüggvényedet használjuk az ASCII kód kinyeréséhez
                 hossz = 122 - ASC(ford.Substring(2, 1));
 
                 for (int i = 1; i <= hossz; i++)
                 {
+                    // Itt karakterré alakítjuk a visszakapott számot
                     int ideig = ASC(ford.Substring(i + 2, 1)) + i - 65;
-
-                    újjelszó += ideig.ToString();
-
+                    újjelszó += ((char)ideig).ToString();
                 }
             }
-            return újjelszó.Replace(@"\u000", "");
+            return újjelszó.Replace("\0", ""); // Az üres karakterek tisztítása
         }
 
         public static int ASC(string Betű)
         {
-            //Visszaadjuk a betű ascii kódját miután karakterré alakítottuk
-            char valami = Convert.ToChar(Betű);
-            return (int)valami;
+            if (string.IsNullOrEmpty(Betű)) return 0;
+            return (int)Convert.ToChar(Betű);
         }
 
 
@@ -144,48 +152,44 @@ namespace VédőEszköz
             int hossz = jelszó.Length;
             jelszó = jelszó.ToUpper();
             string újszó = "";
-            újszó += ((char)((rnd.Next(100) * 10) + 47)).ToString(); //kamu
-            újszó += ((char)((rnd.Next(100) * 10) + 97)).ToString(); //kamu
+            újszó += ((char)((rnd.Next(1, 11)) + 47)).ToString();
+            újszó += ((char)((rnd.Next(1, 11)) + 97)).ToString();
             újszó += ((char)(122 - hossz)).ToString();
+
             for (int i = 1; i <= hossz; i++)
             {
-                string betű = jelszó.Substring(i - 1, 1);
-                int ss = char.Parse(betű);
-                string újbetű = ((char)(ss + i - 15)).ToString();
-                int újss = char.Parse(újbetű);
-                újszó += újbetű;
+                char c = Convert.ToChar(jelszó.Substring(i - 1, 1));
+                újszó += ((char)((int)c + i - 15)).ToString();
             }
-            // kitölti 25 karakterig
+
             for (int i = újszó.Length; i <= 24; i++)
-                újszó += ((char)(int)(rnd.Next(100) * 10) + 97).ToString();
+                újszó += ((char)(rnd.Next(97, 107))).ToString();
+
             string ford = "";
-            for (int i = 25; i >= 1; i -= 1)
+            for (int i = újszó.Length; i >= 1; i -= 1)
                 ford += újszó.Substring(i - 1, 1);
             return ford;
         }
 
         public static string MÁSDekódolja(string áljelszó)
         {
-
             string ford = "";
             int hossz;
             string újjelszó = "";
-            string betű;
 
-            if (áljelszó.Length > 0)
+            if (!string.IsNullOrEmpty(áljelszó))
             {
-                for (int i = 25; i >= 1; i -= 1)
+                for (int i = áljelszó.Length; i >= 1; i -= 1)
                     ford += áljelszó.Substring(i - 1, 1);
-                hossz = 122 - Convert.ToChar(ford.Substring(2, 1));
+
+                hossz = 122 - ASC(ford.Substring(2, 1));
 
                 for (int i = 1; i <= hossz; i++)
                 {
-                    betű = ford.Substring(i + 2, 1);
-                    char Betűkar = char.Parse(betű);
-                    újjelszó += ((char)(char.Parse(betű) - i + 15)).ToString();
+                    char c = Convert.ToChar(ford.Substring(i + 2, 1));
+                    újjelszó += ((char)((int)c - i + 15)).ToString();
                 }
             }
-
             return újjelszó;
         }
 
