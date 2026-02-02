@@ -342,16 +342,17 @@ namespace VédőEszköz
 
         private void Verzió_Váltás_Click(object sender, EventArgs e)
         {
-            // frissítjük a verziót
             Adat_Belépés_Verzió Elem = (from a in AdatokVerzó
                                         where a.Id == 2
                                         select a).FirstOrDefault();
-            double verzió = double.Parse(Application.ProductVersion.Replace(".", ""));
-            Adat_Belépés_Verzió ADAT = new Adat_Belépés_Verzió(2, verzió);
+
+            double verziószám = double.Parse(Application.ProductVersion.Replace(".", ""));
+
             if (Elem != null)
-                Kéz_Belépés_Verzió.Módosítás(ADAT);
+                Kéz_Belépés_Verzió.Módosítás(2, verziószám);
             else
-                Kéz_Belépés_Verzió.Rögzítés(ADAT);
+                Kéz_Belépés_Verzió.Rögzítés(verziószám);
+
             Verziószám_kiírás();
             MessageBox.Show("Az adatok rögzítése befejeződött!", "Figyelmeztetés", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
