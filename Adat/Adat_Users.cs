@@ -17,7 +17,6 @@ namespace VédőEszköz
         public bool GlobalAdmin { get; private set; }
         public bool TelepAdmin { get; private set; }
 
-        // Teljes konstruktor - SQLite olvasásakor a bool értékeket konvertálva adjuk át
         public Adat_Users(
             int userId,
             string userName,

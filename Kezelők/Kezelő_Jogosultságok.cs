@@ -67,51 +67,55 @@ namespace VédőEszköz
             return Adatok;
         }
 
-        public void Rögzítés(List<Adat_Jogosultságok> Adatok)
+        public void Rögzítés(List<Adat_Jogosultságok> adatok)
         {
-            try
+            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
             {
-                List<Adat_Jogosultságok> AdatokRégi = Lista_Adatok(true);
-                List<string> SzövegGyR = new List<string>();
-                List<string> SzövegGyM = new List<string>();
-                foreach (Adat_Jogosultságok Adat in Adatok)
+                conn.Open();
+                using (var tr = conn.BeginTransaction())
                 {
-                    string T = IsSQLite ? (Adat.Törölt ? "1" : "0") : Adat.Törölt.ToString();
-                    if (!AdatokRégi.Any(a => a.SzervezetId == Adat.SzervezetId && a.UserId == Adat.UserId && a.OldalId == Adat.OldalId && a.GombokId == Adat.GombokId))
+                    foreach (var a in adatok)
                     {
-                        string szöveg = $"INSERT INTO {táblanév} (UserId, OldalId, GombokId, SzervezetId, Törölt) VALUES (";
-                        szöveg += $"{Adat.UserId}, {Adat.OldalId}, {Adat.GombokId}, {Adat.SzervezetId}, {T})";
-                        SzövegGyR.Add(szöveg);
+                        string sql = $@"
+                    INSERT OR REPLACE INTO {táblanév}
+                    (UserId, OldalId, GombokId, SzervezetId, Törölt)
+                    VALUES
+                    (@UserId, @OldalId, @GombokId, @SzervezetId, @Torolt)";
+
+                        using (var cmd = new SQLiteCommand(sql, conn, tr))
+                        {
+                            cmd.Parameters.AddWithValue("@UserId", a.UserId);
+                            cmd.Parameters.AddWithValue("@OldalId", a.OldalId);
+                            cmd.Parameters.AddWithValue("@GombokId", a.GombokId);
+                            cmd.Parameters.AddWithValue("@SzervezetId", a.SzervezetId);
+                            cmd.Parameters.AddWithValue("@Torolt", a.Törölt ? 1 : 0);
+
+                            cmd.ExecuteNonQuery();
+                        }
                     }
-                    else
-                    {
-                        string szöveg = $"UPDATE {táblanév} SET Törölt ={T} WHERE SzervezetId = {Adat.SzervezetId} AND ";
-                        szöveg += $"UserId ={Adat.UserId} AND OldalId ={Adat.OldalId} AND GombokId ={Adat.GombokId}";
-                        SzövegGyM.Add(szöveg);
-                    }
+                    tr.Commit();
                 }
-                if (SzövegGyR.Count > 0) MyA.ABMódosítás(hely, jelszó, SzövegGyR);
-                if (SzövegGyM.Count > 0) MyA.ABMódosítás(hely, jelszó, SzövegGyM);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         public void Törlés(Adat_Jogosultságok Adat)
         {
-            try
+            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
             {
-                string T = IsSQLite ? "1" : "true";
-                string szöveg = $"UPDATE {táblanév} SET Törölt ={T} WHERE UserId ={Adat.UserId} AND OldalId ={Adat.OldalId} AND GombokId ={Adat.GombokId}";
-                MyA.ABMódosítás(hely, jelszó, szöveg);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                conn.Open();
+
+                string sql = $@"
+            UPDATE {táblanév}
+            SET Törölt=1
+            WHERE UserId=@UserId AND OldalId=@OldalId AND GombokId=@GombokId";
+
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@UserId", Adat.UserId);
+                    cmd.Parameters.AddWithValue("@OldalId", Adat.OldalId);
+                    cmd.Parameters.AddWithValue("@GombokId", Adat.GombokId);
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
 

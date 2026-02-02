@@ -71,23 +71,57 @@ namespace VédőEszköz
 
         public void Rögzítés(Adat_Oldalak Adat)
         {
-            string L = Adat.Látható ? "1" : "0";
-            string T = Adat.Törölt ? "1" : "0";
+            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
+            {
+                conn.Open();
 
-            string szöveg = $"INSERT INTO {táblanév} (FromName, MenuName, MenuFelirat, Látható, Törölt) VALUES (";
-            szöveg += $"'{Adat.FromName}', '{Adat.MenuName}', '{Adat.MenuFelirat}', {L}, {T})";
-            MyA.ABMódosítás(hely, jelszó, szöveg);
+                string sql = $@"
+            INSERT INTO {táblanév}
+            (FromName, MenuName, MenuFelirat, Látható, Törölt)
+            VALUES
+            (@FromName, @MenuName, @MenuFelirat, @Lathato, @Torolt)";
+
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@FromName", Adat.FromName);
+                    cmd.Parameters.AddWithValue("@MenuName", Adat.MenuName);
+                    cmd.Parameters.AddWithValue("@MenuFelirat", Adat.MenuFelirat);
+                    cmd.Parameters.AddWithValue("@Lathato", Adat.Látható ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@Torolt", Adat.Törölt ? 1 : 0);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
 
         public void Módosítás(Adat_Oldalak Adat)
         {
-            string L = Adat.Látható ? "1" : "0";
-            string T = Adat.Törölt ? "1" : "0";
+            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
+            {
+                conn.Open();
 
-            string szöveg = $"UPDATE {táblanév} SET ";
-            szöveg += $"FromName ='{Adat.FromName}', MenuName ='{Adat.MenuName}', MenuFelirat ='{Adat.MenuFelirat}', ";
-            szöveg += $"Látható ={L}, Törölt ={T} WHERE OldalId = {Adat.OldalId}";
-            MyA.ABMódosítás(hely, jelszó, szöveg);
+                string sql = $@"
+            UPDATE {táblanév}
+            SET FromName = @FromName,
+                MenuName = @MenuName,
+                MenuFelirat = @MenuFelirat,
+                Látható = @Lathato,
+                Törölt = @Torolt
+            WHERE OldalId = @OldalId";
+
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@FromName", Adat.FromName);
+                    cmd.Parameters.AddWithValue("@MenuName", Adat.MenuName);
+                    cmd.Parameters.AddWithValue("@MenuFelirat", Adat.MenuFelirat);
+                    cmd.Parameters.AddWithValue("@Lathato", Adat.Látható ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@Torolt", Adat.Törölt ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@OldalId", Adat.OldalId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
+
     }
 }

@@ -45,13 +45,13 @@ namespace VédőEszköz
                             rekord["WinUserName"].ToString().Trim(),
                             rekord["Dolgozószám"].ToString().Trim(),
                             rekord["Password"].ToString().Trim(),
-                            (rekord["Dátum"].ToÉrt_DaTeTime()),
-                            (rekord["Frissít"].ToÉrt_Int()) == 1,
-                            (rekord["Törölt"].ToÉrt_Int()) == 1,
+                            rekord["Dátum"].ToÉrt_DaTeTime(),
+                            rekord["Frissít"].ToÉrt_Int() == 1,
+                            rekord["Törölt"].ToÉrt_Int() == 1,
                             rekord["Szervezetek"].ToString().Trim(),
                             rekord["Szervezet"].ToString().Trim(),
-                            (rekord["GlobalAdmin"].ToÉrt_Int()) == 1,
-                            (rekord["TelepAdmin"].ToÉrt_Int()) == 1
+                            rekord["GlobalAdmin"].ToÉrt_Int() == 1,
+                            rekord["TelepAdmin"].ToÉrt_Int() == 1
                         ));
                     }
                 }
@@ -70,34 +70,93 @@ namespace VédőEszköz
 
         public void Rögzítés(Adat_Users Adat)
         {
-            string frissit = Adat.Frissít ? "1" : "0";
-            string torolt = Adat.Törölt ? "1" : "0";
-            string gAdmin = Adat.GlobalAdmin ? "1" : "0";
-            string tAdmin = Adat.TelepAdmin ? "1" : "0";
+            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
+            {
+                conn.Open();
 
-            string szöveg = $"INSERT INTO {táblanév} (UserName, WinUserName, Dolgozószám, [Password], Dátum, Frissít, Törölt, Szervezetek, Szervezet, GlobalAdmin, TelepAdmin) VALUES (";
-            szöveg += $"'{Adat.UserName}', '{Adat.WinUserName}', '{Adat.Dolgozószám}', '{Adat.Password}', '{Adat.Dátum:yyyy-MM-dd}', {frissit}, {torolt}, '{Adat.Szervezetek}', '{Adat.Szervezet}', {gAdmin}, {tAdmin})";
-            MyA.ABMódosítás(hely, jelszó, szöveg);
+                string sql = $@"
+        INSERT INTO {táblanév}
+        (UserName, WinUserName, Dolgozószám, [Password], Dátum, Frissít, Törölt, Szervezetek, Szervezet, GlobalAdmin, TelepAdmin)
+        VALUES
+        (@UserName, @WinUserName, @Dolgozoszam, @Password, @Datum, @Frissit, @Torolt, @Szervezetek, @Szervezet, @GlobalAdmin, @TelepAdmin)";
+
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@UserName", Adat.UserName);
+                    cmd.Parameters.AddWithValue("@WinUserName", Adat.WinUserName);
+                    cmd.Parameters.AddWithValue("@Dolgozoszam", Adat.Dolgozószám);
+                    cmd.Parameters.AddWithValue("@Password", Adat.Password);
+                    cmd.Parameters.AddWithValue("@Datum", Adat.Dátum.ToString("yyyy-MM-dd"));
+                    cmd.Parameters.AddWithValue("@Frissit", Adat.Frissít ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@Torolt", Adat.Törölt ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@Szervezetek", Adat.Szervezetek);
+                    cmd.Parameters.AddWithValue("@Szervezet", Adat.Szervezet);
+                    cmd.Parameters.AddWithValue("@GlobalAdmin", Adat.GlobalAdmin ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@TelepAdmin", Adat.TelepAdmin ? 1 : 0);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
         }
+
 
         public void Módosítás(Adat_Users Adat)
         {
-            string torolt = Adat.Törölt ? "1" : "0";
-            string gAdmin = Adat.GlobalAdmin ? "1" : "0";
-            string tAdmin = Adat.TelepAdmin ? "1" : "0";
+            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
+            {
+                conn.Open();
 
-            string szöveg = $"UPDATE {táblanév} SET WinUserName ='{Adat.WinUserName}', Dátum ='{Adat.Dátum:yyyy-MM-dd}', ";
-            szöveg += $"Törölt ={torolt}, Szervezetek ='{Adat.Szervezetek}', Szervezet ='{Adat.Szervezet}', ";
-            szöveg += $"GlobalAdmin={gAdmin}, TelepAdmin={tAdmin} WHERE UserId = {Adat.UserId}";
-            MyA.ABMódosítás(hely, jelszó, szöveg);
+                string sql = $@"
+            UPDATE {táblanév}
+            SET WinUserName = @WinUserName,
+                Dátum = @Datum,
+                Törölt = @Torolt,
+                Szervezetek = @Szervezetek,
+                Szervezet = @Szervezet,
+                GlobalAdmin = @GlobalAdmin,
+                TelepAdmin = @TelepAdmin
+            WHERE UserId = @UserId";
+
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@WinUserName", Adat.WinUserName);
+                    cmd.Parameters.AddWithValue("@Datum", Adat.Dátum.ToString("yyyy-MM-dd"));
+                    cmd.Parameters.AddWithValue("@Torolt", Adat.Törölt ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@Szervezetek", Adat.Szervezetek);
+                    cmd.Parameters.AddWithValue("@Szervezet", Adat.Szervezet);
+                    cmd.Parameters.AddWithValue("@GlobalAdmin", Adat.GlobalAdmin ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@TelepAdmin", Adat.TelepAdmin ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@UserId", Adat.UserId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
 
         public void MódosításJeszó(Adat_Users Adat)
         {
-            string frissit = Adat.Frissít ? "1" : "0";
-            string szöveg = $"UPDATE {táblanév} SET [Password] ='{Adat.Password}', Dátum ='{DateTime.Today:yyyy-MM-dd}', ";
-            szöveg += $"Frissít ={frissit} WHERE UserId = {Adat.UserId}";
-            MyA.ABMódosítás(hely, jelszó, szöveg);
+            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
+            {
+                conn.Open();
+
+                string sql = $@"
+            UPDATE {táblanév}
+            SET [Password] = @Password,
+                Dátum = @Datum,
+                Frissít = @Frissit
+            WHERE UserId = @UserId";
+
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Password", Adat.Password);
+                    cmd.Parameters.AddWithValue("@Datum", DateTime.Today.ToString("yyyy-MM-dd"));
+                    cmd.Parameters.AddWithValue("@Frissit", Adat.Frissít ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@UserId", Adat.UserId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
     }
 }

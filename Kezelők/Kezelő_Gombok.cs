@@ -94,42 +94,60 @@ namespace VédőEszköz
 
         public void Rögzítés(Adat_Gombok Adat)
         {
-            try
+            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
             {
-                string L = Adat.Látható ? "1" : "0";
-                string T = Adat.Törölt ? "1" : "0";
+                conn.Open();
 
-                string szöveg = $"INSERT INTO {táblanév} (FromName, GombName, GombFelirat, Szervezet, Látható, Törölt) VALUES (";
-                szöveg += $"'{Adat.FromName}', '{Adat.GombName}', '{Adat.GombFelirat}', '{Adat.Szervezet}', {L}, {T})";
+                string sql = $@"
+            INSERT INTO {táblanév}
+            (FromName, GombName, GombFelirat, Szervezet, Látható, Törölt)
+            VALUES
+            (@FromName, @GombName, @GombFelirat, @Szervezet, @Lathato, @Torolt)";
 
-                MyA.ABMódosítás(hely, jelszó, szöveg);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                throw;
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@FromName", Adat.FromName);
+                    cmd.Parameters.AddWithValue("@GombName", Adat.GombName);
+                    cmd.Parameters.AddWithValue("@GombFelirat", Adat.GombFelirat);
+                    cmd.Parameters.AddWithValue("@Szervezet", Adat.Szervezet);
+                    cmd.Parameters.AddWithValue("@Lathato", Adat.Látható ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@Torolt", Adat.Törölt ? 1 : 0);
+
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
 
         public void Módosítás(Adat_Gombok Adat)
         {
-            try
+            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
             {
-                string L = Adat.Látható ? "1" : "0";
-                string T = Adat.Törölt ? "1" : "0";
+                conn.Open();
 
-                string szöveg = $"UPDATE {táblanév} SET ";
-                szöveg += $"FromName ='{Adat.FromName}', GombName ='{Adat.GombName}', GombFelirat ='{Adat.GombFelirat}', ";
-                szöveg += $"Szervezet ='{Adat.Szervezet}', Látható ={L}, Törölt ={T} ";
-                szöveg += $"WHERE GombokId = {Adat.GombokId}";
+                string sql = $@"
+            UPDATE {táblanév}
+            SET FromName=@FromName,
+                GombName=@GombName,
+                GombFelirat=@GombFelirat,
+                Szervezet=@Szervezet,
+                Látható=@Lathato,
+                Törölt=@Torolt
+            WHERE GombokId=@Id";
 
-                MyA.ABMódosítás(hely, jelszó, szöveg);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                throw;
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@FromName", Adat.FromName);
+                    cmd.Parameters.AddWithValue("@GombName", Adat.GombName);
+                    cmd.Parameters.AddWithValue("@GombFelirat", Adat.GombFelirat);
+                    cmd.Parameters.AddWithValue("@Szervezet", Adat.Szervezet);
+                    cmd.Parameters.AddWithValue("@Lathato", Adat.Látható ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@Torolt", Adat.Törölt ? 1 : 0);
+                    cmd.Parameters.AddWithValue("@Id", Adat.GombokId);
+
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
+
     }
 }

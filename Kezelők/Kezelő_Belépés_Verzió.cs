@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.OleDb;
+using System.Data.SQLite;
 using System.IO;
 using System.Windows.Forms;
 using MyA = Adatbázis;
@@ -52,41 +53,37 @@ namespace VédőEszköz
             return Adatok;
         }
 
-        public void Rögzítés(Adat_Belépés_Verzió Adat)
+        public void Rögzítés(double verzio)
         {
-            try
+            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
             {
-                string szöveg = $"INSERT INTO {táblanév} (id, verzió ) VALUES ({Adat.Id}, {Adat.Verzió})";
-                MyA.ABMódosítás(hely, jelszó, szöveg);
-            }
-            catch (HibásBevittAdat ex)
-            {
-                MessageBox.Show(ex.Message, "Információ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                conn.Open();
+
+                string sql = $"INSERT INTO {táblanév} (Verzió) VALUES (@Verzio)";
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Verzio", verzio);
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
 
-        public void Módosítás(Adat_Belépés_Verzió Adat)
+        public void Módosítás(long id, double verzio)
         {
-            try
+            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
             {
-                string szöveg = $"UPDATE {táblanév} SET verzió={Adat.Verzió}  WHERE ID={Adat.Id}";
-                MyA.ABMódosítás(hely, jelszó, szöveg);
-            }
-            catch (HibásBevittAdat ex)
-            {
-                MessageBox.Show(ex.Message, "Információ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                conn.Open();
+
+                string sql = $"UPDATE {táblanév} SET Verzió=@Verzio WHERE Id=@Id";
+                using (var cmd = new SQLiteCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Verzio", verzio);
+                    cmd.Parameters.AddWithValue("@Id", id);
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
+
     }
 
 }
