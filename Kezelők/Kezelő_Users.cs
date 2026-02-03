@@ -1,15 +1,16 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
+using System.Data.OleDb;
 using System.IO;
-using System.Windows.Forms;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace VédőEszköz
 {
     public class Kezelő_Users
     {
-		readonly string hely = Path.Combine(Application.StartupPath, "VédőAdatok", "Új_Belépés.db");
+        readonly string hely = Path.Combine(Application.StartupPath, "VédőAdatok", "Új_Belépés.db");
 		readonly string Password = "ForgalmiUtasítás";
         readonly string TableName = "Tábla_Users";
         string ConnectionString;
@@ -40,11 +41,7 @@ namespace VédőEszköz
 
         private void CreateTableIfNotExists()
         {
-            
-
-            try
-            {
-				var sql = $@"
+			var sql = $@"
                 CREATE TABLE IF NOT EXISTS {TableName} (
                     UserId INTEGER PRIMARY KEY AUTOINCREMENT,
                     UserName TEXT,
@@ -59,6 +56,8 @@ namespace VédőEszköz
                     GlobalAdmin INTEGER,
                     TelepAdmin INTEGER
                 );";
+			try
+            {
 				var connection = new SqliteConnection(ConnectionString);
                 connection.Open();
                 var command = new SqliteCommand(sql, connection);
@@ -76,13 +75,13 @@ namespace VédőEszköz
 			var meglévő = lista.FirstOrDefault(u => u.UserId == adat.UserId);
 
 			if (meglévő == null || adat.UserId == 0)
-				InsertData(adat);
+				Rögzítés(adat);
 			else
-				UpdateData(adat);
+				Módosítás(adat);
 		}
 
 		// CREATE / INSERT
-		public void InsertData(Adat_Users adat)
+		public void Rögzítés(Adat_Users adat)
         {
             var sql = $@"
                 INSERT INTO {TableName}
@@ -159,7 +158,7 @@ namespace VédőEszköz
         }
 
         // UPDATE általános
-        public void UpdateData(Adat_Users adat)
+        public void Módosítás(Adat_Users adat)
         {
             var sql = $@"
                 UPDATE {TableName} SET

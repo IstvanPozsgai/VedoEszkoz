@@ -1,144 +1,135 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
-using System.Data.OleDb;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using MyA = Adatbázis;
-
-
 
 namespace VédőEszköz
 {
     public class Kezelő_Szervezet
     {
-        readonly string hely = $@"{Application.StartupPath}\Adatok\Alapadatok.mdb";
+        readonly string hely = Path.Combine(Application.StartupPath, "VédőAdatok", "Alapadatok.db");
         readonly string jelszó = "csavarhúzó";
         readonly string táblanév = "Tábla_Szervezet";
+        readonly string connectionString;
 
         public Kezelő_Szervezet()
         {
-            if (!File.Exists(hely)) Adatbázis_Létrehozás.Szervezet(hely.KönyvSzerk());
-            if (!AdatBázis_kezelés.TáblaEllenőrzés(hely, jelszó, táblanév)) Adatbázis_Létrehozás.Szervezet(hely);
+            EnsureDirectory();
+            connectionString = BuildConnectionString();
+            CreateTableIfNotExists();
         }
 
+        private void EnsureDirectory()
+        {
+            var dir = Path.GetDirectoryName(hely);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+        }
+
+        private string BuildConnectionString()
+        {
+            return new SqliteConnectionStringBuilder
+            {
+                DataSource = hely,
+                Mode = SqliteOpenMode.ReadWriteCreate,
+                Password = jelszó
+            }.ToString();
+        }
+
+        private void CreateTableIfNotExists()
+        {
+            var sql = $@"
+                CREATE TABLE IF NOT EXISTS {táblanév} (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Szervezet TEXT NOT NULL,
+                    Státus INTEGER NOT NULL
+                );";
+
+            using var conn = new SqliteConnection(connectionString);
+            conn.Open();
+            using var cmd = new SqliteCommand(sql, conn);
+            cmd.ExecuteNonQuery();
+        }
+
+        // READ
         public List<Adat_Szervezet> Lista_Adatok()
         {
-            string szöveg = $"SELECT * FROM {táblanév} ORDER BY ID";
-            List<Adat_Szervezet> Adatok = new List<Adat_Szervezet>();
-            Adat_Szervezet Adat;
+            var lista = new List<Adat_Szervezet>();
+            var sql = $"SELECT * FROM {táblanév} ORDER BY Id";
 
-            string kapcsolatiszöveg = $"Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{hely}'; Jet Oledb:Database Password={jelszó}";
+            using var conn = new SqliteConnection(connectionString);
+            conn.Open();
+            using var cmd = new SqliteCommand(sql, conn);
+            using var reader = cmd.ExecuteReader();
 
-            using (OleDbConnection Kapcsolat = new OleDbConnection(kapcsolatiszöveg))
+            while (reader.Read())
             {
-                using (OleDbCommand Parancs = new OleDbCommand(szöveg, Kapcsolat))
-                {
-                    Kapcsolat.Open();
-                    using (OleDbDataReader rekord = Parancs.ExecuteReader())
-                    {
-                        if (rekord.HasRows)
-                        {
-                            while (rekord.Read())
-                            {
-                                Adat = new Adat_Szervezet(
-                                        rekord["Id"].ToÉrt_Int(),
-                                        rekord["Szervezet"].ToStrTrim(),
-                                        rekord["Státus"].ToÉrt_Bool());
-                                Adatok.Add(Adat);
-                            }
-                        }
-                    }
-                }
+                lista.Add(new Adat_Szervezet(
+                    reader["Id"].ToString().ToÉrt_Int(),
+                    reader["Szervezet"].ToString().Trim(),
+                    reader["Státus"].ToString().ToÉrt_Int() == 1
+                ));
             }
-            return Adatok;
+
+            return lista;
         }
 
-        public void Döntés(Adat_Szervezet Adat)
+        // INSERT vagy UPDATE döntés
+        public void Döntés(Adat_Szervezet adat)
         {
-            try
-            {
-                List<Adat_Szervezet> Adatok = Lista_Adatok();
-                if (!Adatok.Any(a => a.Id == Adat.Id))
-                {
-                    if (Adatok.Any(a => a.Szervezet == Adat.Szervezet && a.Státus == false)) throw new HibásBevittAdat("Van már ilyen néven Szervezet létrehozva.");
-                    Rögzítés(Adat);
-                }
-                else
-                    Módosítás(Adat);
+            var lista = Lista_Adatok();
+            var létezik = lista.FirstOrDefault(a => a.Id == adat.Id);
 
-            }
-            catch (HibásBevittAdat ex)
+            if (létezik == null || adat.Id == 0)
             {
-                MessageBox.Show(ex.Message, "Információ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (lista.Any(a => a.Szervezet == adat.Szervezet && !a.Státus))
+                    throw new HibásBevittAdat("Van már ilyen nevű szervezet.");
+
+                Rögzítés(adat);
             }
-            catch (Exception ex)
+            else
             {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Módosítás(adat);
             }
         }
 
-        public void Rögzítés(Adat_Szervezet Adat)
+        // INSERT
+        public void Rögzítés(Adat_Szervezet adat)
         {
-            try
-            {
-                string szöveg = $"INSERT INTO {táblanév} ( Id, Szervezet, státus) VALUES ";
-                szöveg += $"({Sorszám()},  '{Adat.Szervezet}', {Adat.Státus})";
-                MyA.ABMódosítás(hely, jelszó, szöveg);
+            var sql = $@"
+                INSERT INTO {táblanév} (Szervezet, Státus)
+                VALUES (@Szervezet, @Status)";
 
-            }
-            catch (HibásBevittAdat ex)
-            {
-                MessageBox.Show(ex.Message, "Információ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            using var conn = new SqliteConnection(connectionString);
+            conn.Open();
+            using var cmd = new SqliteCommand(sql, conn);
+
+            cmd.Parameters.AddWithValue("@Szervezet", adat.Szervezet);
+            cmd.Parameters.AddWithValue("@Status", adat.Státus ? 1 : 0);
+
+            cmd.ExecuteNonQuery();
         }
 
-        public void Módosítás(Adat_Szervezet Adat)
+        // UPDATE
+        public void Módosítás(Adat_Szervezet adat)
         {
-            try
-            {
+            var sql = $@"
+                UPDATE {táblanév}
+                SET Szervezet=@Szervezet,
+                    Státus=@Status
+                WHERE Id=@Id";
 
-                string szöveg = $"UPDATE {táblanév} SET ";
-                szöveg += $"Szervezet='{Adat.Szervezet}', ";
-                szöveg += $"Státus={Adat.Státus}";
-                szöveg += $" WHERE Id={Adat.Id}";
-                MyA.ABMódosítás(hely, jelszó, szöveg);
-            }
-            catch (HibásBevittAdat ex)
-            {
-                MessageBox.Show(ex.Message, "Információ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+            using var conn = new SqliteConnection(connectionString);
+            conn.Open();
+            using var cmd = new SqliteCommand(sql, conn);
 
-        private int Sorszám()
-        {
-            int válasz = 1;
-            try
-            {
-                List<Adat_Szervezet> Adatok = Lista_Adatok();
-                if (Adatok.Count > 0) válasz = Adatok.Max(a => a.Id) + 1;
-            }
-            catch (HibásBevittAdat ex)
-            {
-                MessageBox.Show(ex.Message, "Információ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                HibaNapló.Log(ex.Message, this.ToString(), ex.StackTrace, ex.Source, ex.HResult);
-                MessageBox.Show(ex.Message + "\n\n a hiba naplózásra került.", "A program hibára futott", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            return válasz;
+            cmd.Parameters.AddWithValue("@Szervezet", adat.Szervezet);
+            cmd.Parameters.AddWithValue("@Status", adat.Státus ? 1 : 0);
+            cmd.Parameters.AddWithValue("@Id", adat.Id);
+
+            cmd.ExecuteNonQuery();
         }
     }
 }

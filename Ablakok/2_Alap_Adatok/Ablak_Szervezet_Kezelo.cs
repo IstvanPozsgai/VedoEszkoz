@@ -42,11 +42,7 @@ namespace VédőEszköz
                         szervezetNev,
                         statusz
                     );
-
-                    if (UjAdat)
-                        KézSzervezet.Rögzítés(ADAT);
-                    else
-                        KézSzervezet.Módosítás(ADAT);
+                        KézSzervezet.Döntés(ADAT);
 
                     FrissítésCallBack?.Invoke();
                     this.Close();
