@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using SQLitePCL;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Zuby.ADGV;
@@ -53,5 +55,6 @@ namespace VédőEszköz
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new AblakBejelentkezés());
         }
+
     }
 }

@@ -18,7 +18,7 @@ namespace VédőEszköz
         readonly Kezelő_Users Kéz = new Kezelő_Users();
         readonly Kezelő_Belépés_Verzió KézVerzió = new Kezelő_Belépés_Verzió();
         readonly Kezelő_Gombok KézGombok = new Kezelő_Gombok();
-        readonly Kezelő_Oldalok KézOldal = new Kezelő_Oldalok();
+        readonly Kezelő_Oldalak KézOldal = new Kezelő_Oldalak();
         readonly Kezelő_Kiegészítő_Könyvtár KézKönyvtár = new Kezelő_Kiegészítő_Könyvtár();
 
         List<Adat_Users> Adatok = new List<Adat_Users>();
@@ -29,7 +29,6 @@ namespace VédőEszköz
         #region Alap
         public AblakBejelentkezés()
         {
-            SQLitePCL.Batteries.Init();
             InitializeComponent();
             Start();
         }

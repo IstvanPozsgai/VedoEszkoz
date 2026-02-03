@@ -1,161 +1,249 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
-using VédőEszköz;
-using MyA = Adatbázis;
+using System.Linq;
 
 namespace VédőEszköz
 {
     public class Kezelő_Users
     {
-        readonly string hely;
-        readonly string jelszó = "ForgalmiUtasítás";
-        readonly string táblanév = "Tábla_Users";
+		readonly string hely = Path.Combine(Application.StartupPath, "VédőAdatok", "Új_Belépés.db");
+		readonly string Password = "ForgalmiUtasítás";
+        readonly string TableName = "Tábla_Users";
+        string ConnectionString;
 
         public Kezelő_Users()
         {
-            hely = Path.Combine(Application.StartupPath, "VédőAdatok", "Új_Belépés.db");
-
-            if (!File.Exists(hely))
-                Adatbázis_Létrehozás.Adatbázis_Users(hely);
-
-            if (!AdatBázis_kezelés.TáblaEllenőrzés(hely, jelszó, táblanév))
-                Adatbázis_Létrehozás.Adatbázis_Users(hely);
+			EnsureDirectory();
+            ConnectionString = BuildConnectionString();
+            CreateTableIfNotExists();
         }
 
+        private void EnsureDirectory()
+        {
+            var dir = Path.GetDirectoryName(hely);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+        }
+
+        private string BuildConnectionString()
+        {
+            return new SqliteConnectionStringBuilder
+            {
+                DataSource = hely,
+                Mode = SqliteOpenMode.ReadWriteCreate,
+                Password = Password
+            }.ToString();
+        }
+
+        private void CreateTableIfNotExists()
+        {
+            
+
+            try
+            {
+				var sql = $@"
+                CREATE TABLE IF NOT EXISTS {TableName} (
+                    UserId INTEGER PRIMARY KEY AUTOINCREMENT,
+                    UserName TEXT,
+                    WinUserName TEXT,
+                    Dolgozószám TEXT,
+                    Password TEXT,
+                    Dátum TEXT,
+                    Frissít INTEGER,
+                    Törölt INTEGER,
+                    Szervezetek TEXT,
+                    Szervezet TEXT,
+                    GlobalAdmin INTEGER,
+                    TelepAdmin INTEGER
+                );";
+				var connection = new SqliteConnection(ConnectionString);
+                connection.Open();
+                var command = new SqliteCommand(sql, connection);
+                command.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch (SqliteException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+		public void Döntés(Adat_Users adat)
+		{
+			var lista = Lista_Adatok();
+			var meglévő = lista.FirstOrDefault(u => u.UserId == adat.UserId);
+
+			if (meglévő == null || adat.UserId == 0)
+				InsertData(adat);
+			else
+				UpdateData(adat);
+		}
+
+		// CREATE / INSERT
+		public void InsertData(Adat_Users adat)
+        {
+            var sql = $@"
+                INSERT INTO {TableName}
+                (UserName, WinUserName, Dolgozószám, Password, Dátum, Frissít, Törölt, Szervezetek, Szervezet, GlobalAdmin, TelepAdmin)
+                VALUES
+                (@UserName, @WinUserName, @Dolgozoszam, @Password, @Datum, @Frissit, @Torolt, @Szervezetek, @Szervezet, @GlobalAdmin, @TelepAdmin)";
+
+            try
+            {
+                using var connection = new SqliteConnection(ConnectionString);
+                connection.Open();
+                using var cmd = new SqliteCommand(sql, connection);
+
+                cmd.Parameters.AddWithValue("@UserName", adat.UserName);
+                cmd.Parameters.AddWithValue("@WinUserName", adat.WinUserName);
+                cmd.Parameters.AddWithValue("@Dolgozoszam", adat.Dolgozószám);
+                cmd.Parameters.AddWithValue("@Password", adat.Password);
+                cmd.Parameters.AddWithValue("@Datum", adat.DátumSQL);
+                cmd.Parameters.AddWithValue("@Frissit", adat.FrissítInt);
+                cmd.Parameters.AddWithValue("@Torolt", adat.TöröltInt);
+                cmd.Parameters.AddWithValue("@Szervezetek", adat.Szervezetek);
+                cmd.Parameters.AddWithValue("@Szervezet", adat.Szervezet);
+                cmd.Parameters.AddWithValue("@GlobalAdmin", adat.GlobalAdminInt);
+                cmd.Parameters.AddWithValue("@TelepAdmin", adat.TelepAdminInt);
+
+                cmd.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch (SqliteException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        // READ / SELECT
         public List<Adat_Users> Lista_Adatok()
         {
-            List<Adat_Users> Adatok = new List<Adat_Users>();
-            string szöveg = $"SELECT * FROM {táblanév} ORDER BY UserName";
+            var lista = new List<Adat_Users>();
+            var sql = $"SELECT * FROM {TableName}";
 
-            using (SQLiteConnection Kapcsolat = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
+            try
             {
-                Kapcsolat.Open();
-                using (SQLiteCommand Parancs = new SQLiteCommand(szöveg, Kapcsolat))
-                using (var rekord = Parancs.ExecuteReader())
+                using var connection = new SqliteConnection(ConnectionString);
+                connection.Open();
+                using var cmd = new SqliteCommand(sql, connection);
+                using var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
                 {
-                    while (rekord.Read())
-                    {
-                        Adatok.Add(new Adat_Users(
-                            rekord["UserId"].ToÉrt_Int(),
-                            rekord["UserName"].ToString().Trim(),
-                            rekord["WinUserName"].ToString().Trim(),
-                            rekord["Dolgozószám"].ToString().Trim(),
-                            rekord["Password"].ToString().Trim(),
-                            rekord["Dátum"].ToÉrt_DaTeTime(),
-                            rekord["Frissít"].ToÉrt_Int() == 1,
-                            rekord["Törölt"].ToÉrt_Int() == 1,
-                            rekord["Szervezetek"].ToString().Trim(),
-                            rekord["Szervezet"].ToString().Trim(),
-                            rekord["GlobalAdmin"].ToÉrt_Int() == 1,
-                            rekord["TelepAdmin"].ToÉrt_Int() == 1
-                        ));
-                    }
+                    lista.Add(new Adat_Users(
+                        reader["UserId"].ToString().ToÉrt_Int(),
+                        reader["UserName"].ToString().Trim(),
+                        reader["WinUserName"].ToString().Trim(),
+                        reader["Dolgozószám"].ToString().Trim(),
+                        reader["Password"].ToString().Trim(),
+                        reader["Dátum"].ToString().ToÉrt_DaTeTime(),
+                        reader["Frissít"].ToString().ToÉrt_Int() == 1,
+                        reader["Törölt"].ToString().ToÉrt_Int() == 1,
+                        reader["Szervezetek"].ToString().Trim(),
+                        reader["Szervezet"].ToString().Trim(),
+                        reader["GlobalAdmin"].ToString().ToÉrt_Int() == 1,
+                        reader["TelepAdmin"].ToString().ToÉrt_Int() == 1
+                    ));
                 }
+
+                connection.Close();
             }
-            return Adatok;
-        }
-
-        public void Döntés(Adat_Users Adat)
-        {
-            List<Adat_Users> Adatok = Lista_Adatok();
-            if (!Adatok.Any(a => a.UserId == Adat.UserId))
-                Rögzítés(Adat);
-            else
-                Módosítás(Adat);
-        }
-
-        public void Rögzítés(Adat_Users Adat)
-        {
-            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
+            catch (SqliteException ex)
             {
-                conn.Open();
-
-                string sql = $@"
-        INSERT INTO {táblanév}
-        (UserName, WinUserName, Dolgozószám, [Password], Dátum, Frissít, Törölt, Szervezetek, Szervezet, GlobalAdmin, TelepAdmin)
-        VALUES
-        (@UserName, @WinUserName, @Dolgozoszam, @Password, @Datum, @Frissit, @Torolt, @Szervezetek, @Szervezet, @GlobalAdmin, @TelepAdmin)";
-
-                using (var cmd = new SQLiteCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@UserName", Adat.UserName);
-                    cmd.Parameters.AddWithValue("@WinUserName", Adat.WinUserName);
-                    cmd.Parameters.AddWithValue("@Dolgozoszam", Adat.Dolgozószám);
-                    cmd.Parameters.AddWithValue("@Password", Adat.Password);
-                    cmd.Parameters.AddWithValue("@Datum", Adat.Dátum.ToString("yyyy-MM-dd"));
-                    cmd.Parameters.AddWithValue("@Frissit", Adat.Frissít ? 1 : 0);
-                    cmd.Parameters.AddWithValue("@Torolt", Adat.Törölt ? 1 : 0);
-                    cmd.Parameters.AddWithValue("@Szervezetek", Adat.Szervezetek);
-                    cmd.Parameters.AddWithValue("@Szervezet", Adat.Szervezet);
-                    cmd.Parameters.AddWithValue("@GlobalAdmin", Adat.GlobalAdmin ? 1 : 0);
-                    cmd.Parameters.AddWithValue("@TelepAdmin", Adat.TelepAdmin ? 1 : 0);
-
-                    cmd.ExecuteNonQuery();
-                }
+                MessageBox.Show(ex.Message);
             }
 
+            return lista;
         }
 
-
-        public void Módosítás(Adat_Users Adat)
+        // UPDATE általános
+        public void UpdateData(Adat_Users adat)
         {
-            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
+            var sql = $@"
+                UPDATE {TableName} SET
+                    WinUserName=@WinUserName,
+                    Dátum=@Datum,
+                    Törölt=@Torolt,
+                    Szervezetek=@Szervezetek,
+                    Szervezet=@Szervezet,
+                    GlobalAdmin=@GlobalAdmin,
+                    TelepAdmin=@TelepAdmin
+                WHERE UserId=@UserId";
+
+            try
             {
-                conn.Open();
+                using var connection = new SqliteConnection(ConnectionString);
+                connection.Open();
+                using var cmd = new SqliteCommand(sql, connection);
 
-                string sql = $@"
-            UPDATE {táblanév}
-            SET WinUserName = @WinUserName,
-                Dátum = @Datum,
-                Törölt = @Torolt,
-                Szervezetek = @Szervezetek,
-                Szervezet = @Szervezet,
-                GlobalAdmin = @GlobalAdmin,
-                TelepAdmin = @TelepAdmin
-            WHERE UserId = @UserId";
+                cmd.Parameters.AddWithValue("@WinUserName", adat.WinUserName);
+                cmd.Parameters.AddWithValue("@Datum", adat.DátumSQL);
+                cmd.Parameters.AddWithValue("@Torolt", adat.TöröltInt);
+                cmd.Parameters.AddWithValue("@Szervezetek", adat.Szervezetek);
+                cmd.Parameters.AddWithValue("@Szervezet", adat.Szervezet);
+                cmd.Parameters.AddWithValue("@GlobalAdmin", adat.GlobalAdminInt);
+                cmd.Parameters.AddWithValue("@TelepAdmin", adat.TelepAdminInt);
+                cmd.Parameters.AddWithValue("@UserId", adat.UserId);
 
-                using (var cmd = new SQLiteCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@WinUserName", Adat.WinUserName);
-                    cmd.Parameters.AddWithValue("@Datum", Adat.Dátum.ToString("yyyy-MM-dd"));
-                    cmd.Parameters.AddWithValue("@Torolt", Adat.Törölt ? 1 : 0);
-                    cmd.Parameters.AddWithValue("@Szervezetek", Adat.Szervezetek);
-                    cmd.Parameters.AddWithValue("@Szervezet", Adat.Szervezet);
-                    cmd.Parameters.AddWithValue("@GlobalAdmin", Adat.GlobalAdmin ? 1 : 0);
-                    cmd.Parameters.AddWithValue("@TelepAdmin", Adat.TelepAdmin ? 1 : 0);
-                    cmd.Parameters.AddWithValue("@UserId", Adat.UserId);
-
-                    cmd.ExecuteNonQuery();
-                }
+                cmd.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch (SqliteException ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
-        public void MódosításJeszó(Adat_Users Adat)
+        // UPDATE jelszó
+        public void MódosításJelszó(Adat_Users adat)
         {
-            using (var conn = new SQLiteConnection($"Data Source={hely};Version=3;Password={jelszó};"))
+            var sql = $@"
+                UPDATE {TableName} SET
+                    Password=@Password,
+                    Dátum=@Datum,
+                    Frissít=@Frissit
+                WHERE UserId=@UserId";
+
+            try
             {
-                conn.Open();
+                using var connection = new SqliteConnection(ConnectionString);
+                connection.Open();
+                using var cmd = new SqliteCommand(sql, connection);
 
-                string sql = $@"
-            UPDATE {táblanév}
-            SET [Password] = @Password,
-                Dátum = @Datum,
-                Frissít = @Frissit
-            WHERE UserId = @UserId";
+                cmd.Parameters.AddWithValue("@Password", adat.Password);
+                cmd.Parameters.AddWithValue("@Datum", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                cmd.Parameters.AddWithValue("@Frissit", adat.FrissítInt);
+                cmd.Parameters.AddWithValue("@UserId", adat.UserId);
 
-                using (var cmd = new SQLiteCommand(sql, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Password", Adat.Password);
-                    cmd.Parameters.AddWithValue("@Datum", DateTime.Today.ToString("yyyy-MM-dd"));
-                    cmd.Parameters.AddWithValue("@Frissit", Adat.Frissít ? 1 : 0);
-                    cmd.Parameters.AddWithValue("@UserId", Adat.UserId);
+                cmd.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch (SqliteException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
 
-                    cmd.ExecuteNonQuery();
-                }
+        // DELETE
+        public void DeleteData(int userId)
+        {
+            var sql = $"DELETE FROM {TableName} WHERE UserId=@UserId";
+
+            try
+            {
+                using var connection = new SqliteConnection(ConnectionString);
+                connection.Open();
+                using var cmd = new SqliteCommand(sql, connection);
+
+                cmd.Parameters.AddWithValue("@UserId", userId);
+                cmd.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch (SqliteException ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
     }

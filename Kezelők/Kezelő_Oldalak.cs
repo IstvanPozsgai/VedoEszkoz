@@ -2,19 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace VédőEszköz
 {
-    public class Kezelő_Gombok
+    public class Kezelő_Oldalak
     {
-        readonly string hely = Path.Combine(Application.StartupPath, "VédőAdatok", "ÚJ_Belépés.db");
+        readonly string hely = Path.Combine(Application.StartupPath, "VédőAdatok", "Új_Belépés.db");
         readonly string Password = "ForgalmiUtasítás";
-        readonly string TableName = "Tábla_Gombok";
+        readonly string TableName = "Tábla_Oldalak";
         string ConnectionString;
 
-        public Kezelő_Gombok()
+        public Kezelő_Oldalak()
         {
             EnsureDirectory();
             ConnectionString = BuildConnectionString();
@@ -42,11 +41,10 @@ namespace VédőEszköz
         {
             var sql = $@"
                 CREATE TABLE IF NOT EXISTS {TableName} (
-                    GombokId INTEGER PRIMARY KEY AUTOINCREMENT,
+                    OldalId INTEGER PRIMARY KEY AUTOINCREMENT,
                     FromName TEXT,
-                    GombName TEXT,
-                    GombFelirat TEXT,
-                    Szervezet TEXT,
+                    MenuName TEXT,
+                    MenuFelirat TEXT,
                     Látható INTEGER,
                     Törölt INTEGER
                 );";
@@ -65,13 +63,40 @@ namespace VédőEszköz
             }
         }
 
-        // READ / SELECT
-        public List<Adat_Gombok> Lista_Adatok(bool Minden = false)
+        // CREATE / INSERT
+        public void InsertData(Adat_Oldalak adat)
         {
-            var lista = new List<Adat_Gombok>();
-            var sql = Minden
-                ? $"SELECT * FROM {TableName}"
-                : $"SELECT * FROM {TableName} WHERE Törölt=0";
+            var sql = $@"
+                INSERT INTO {TableName}
+                (FromName, MenuName, MenuFelirat, Látható, Törölt)
+                VALUES (@FromName, @MenuName, @MenuFelirat, @Lathato, @Torolt)";
+
+            try
+            {
+                using var connection = new SqliteConnection(ConnectionString);
+                connection.Open();
+                using var cmd = new SqliteCommand(sql, connection);
+
+                cmd.Parameters.AddWithValue("@FromName", adat.FromName);
+                cmd.Parameters.AddWithValue("@MenuName", adat.MenuName);
+                cmd.Parameters.AddWithValue("@MenuFelirat", adat.MenuFelirat);
+                cmd.Parameters.AddWithValue("@Lathato", adat.Látható ? 1 : 0);
+                cmd.Parameters.AddWithValue("@Torolt", adat.Törölt ? 1 : 0);
+
+                cmd.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch (SqliteException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        // READ / SELECT
+        public List<Adat_Oldalak> Lista_Adatok()
+        {
+            var lista = new List<Adat_Oldalak>();
+            var sql = $"SELECT * FROM {TableName}";
 
             try
             {
@@ -82,12 +107,11 @@ namespace VédőEszköz
 
                 while (reader.Read())
                 {
-                    lista.Add(new Adat_Gombok(
-                        reader["GombokId"].ToString().ToÉrt_Int(),
+                    lista.Add(new Adat_Oldalak(
+                        reader["OldalId"].ToString().ToÉrt_Int(),
                         reader["FromName"].ToString().Trim(),
-                        reader["GombName"].ToString().Trim(),
-                        reader["GombFelirat"].ToString().Trim(),
-                        reader["Szervezet"].ToString().Trim(),
+                        reader["MenuName"].ToString().Trim(),
+                        reader["MenuFelirat"].ToString().Trim(),
                         reader["Látható"].ToString().ToÉrt_Int() == 1,
                         reader["Törölt"].ToString().ToÉrt_Int() == 1
                     ));
@@ -103,48 +127,17 @@ namespace VédőEszköz
             return lista;
         }
 
-        // INSERT
-        public void InsertData(Adat_Gombok adat)
-        {
-            var sql = $@"
-                INSERT INTO {TableName}
-                (FromName, GombName, GombFelirat, Szervezet, Látható, Törölt)
-                VALUES (@FromName, @GombName, @GombFelirat, @Szervezet, @Lathato, @Torolt)";
-
-            try
-            {
-                using var connection = new SqliteConnection(ConnectionString);
-                connection.Open();
-                using var cmd = new SqliteCommand(sql, connection);
-
-                cmd.Parameters.AddWithValue("@FromName", adat.FromName);
-                cmd.Parameters.AddWithValue("@GombName", adat.GombName);
-                cmd.Parameters.AddWithValue("@GombFelirat", adat.GombFelirat);
-                cmd.Parameters.AddWithValue("@Szervezet", adat.Szervezet);
-                cmd.Parameters.AddWithValue("@Lathato", adat.Látható ? 1 : 0);
-                cmd.Parameters.AddWithValue("@Torolt", adat.Törölt ? 1 : 0);
-
-                cmd.ExecuteNonQuery();
-                connection.Close();
-            }
-            catch (SqliteException ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
         // UPDATE
-        public void UpdateData(Adat_Gombok adat)
+        public void UpdateData(Adat_Oldalak adat)
         {
             var sql = $@"
-                UPDATE {TableName}
-                SET FromName=@FromName,
-                    GombName=@GombName,
-                    GombFelirat=@GombFelirat,
-                    Szervezet=@Szervezet,
+                UPDATE {TableName} SET
+                    FromName=@FromName,
+                    MenuName=@MenuName,
+                    MenuFelirat=@MenuFelirat,
                     Látható=@Lathato,
                     Törölt=@Torolt
-                WHERE GombokId=@Id";
+                WHERE OldalId=@OldalId";
 
             try
             {
@@ -153,12 +146,11 @@ namespace VédőEszköz
                 using var cmd = new SqliteCommand(sql, connection);
 
                 cmd.Parameters.AddWithValue("@FromName", adat.FromName);
-                cmd.Parameters.AddWithValue("@GombName", adat.GombName);
-                cmd.Parameters.AddWithValue("@GombFelirat", adat.GombFelirat);
-                cmd.Parameters.AddWithValue("@Szervezet", adat.Szervezet);
+                cmd.Parameters.AddWithValue("@MenuName", adat.MenuName);
+                cmd.Parameters.AddWithValue("@MenuFelirat", adat.MenuFelirat);
                 cmd.Parameters.AddWithValue("@Lathato", adat.Látható ? 1 : 0);
                 cmd.Parameters.AddWithValue("@Torolt", adat.Törölt ? 1 : 0);
-                cmd.Parameters.AddWithValue("@Id", adat.GombokId);
+                cmd.Parameters.AddWithValue("@OldalId", adat.OldalId);
 
                 cmd.ExecuteNonQuery();
                 connection.Close();
@@ -169,17 +161,18 @@ namespace VédőEszköz
             }
         }
 
-        // DELETE (soft delete)
-        public void DeleteData(Adat_Gombok adat)
+        // DELETE
+        public void DeleteData(int oldalId)
         {
-            var sql = $@"UPDATE {TableName} SET Törölt=1 WHERE GombokId=@Id";
+            var sql = $"DELETE FROM {TableName} WHERE OldalId=@OldalId";
 
             try
             {
                 using var connection = new SqliteConnection(ConnectionString);
                 connection.Open();
                 using var cmd = new SqliteCommand(sql, connection);
-                cmd.Parameters.AddWithValue("@Id", adat.GombokId);
+
+                cmd.Parameters.AddWithValue("@OldalId", oldalId);
                 cmd.ExecuteNonQuery();
                 connection.Close();
             }
@@ -189,16 +182,21 @@ namespace VédőEszköz
             }
         }
 
-        // INSERT OR UPDATE döntés
-        public void Döntés(Adat_Gombok adat)
+        // Döntés (INSERT vagy UPDATE)
+        public void Döntés(Adat_Oldalak adat)
         {
-            var lista = Lista_Adatok();
-            var létező = lista.FirstOrDefault(a => a.GombokId == adat.GombokId);
-
-            if (létező == null)
-                InsertData(adat);
-            else
-                UpdateData(adat);
+            try
+            {
+                var lista = Lista_Adatok();
+                if (!lista.Exists(a => a.OldalId == adat.OldalId))
+                    InsertData(adat);
+                else
+                    UpdateData(adat);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hiba az adatok mentésekor: {ex.Message}");
+            }
         }
     }
 }

@@ -1,24 +1,26 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
+
 using System.IO;
+using System.Windows.Forms;
 using VédőEszköz;
 
 internal static partial class Adatbázis
 {
-    private static SQLiteConnection KapcsolatLétrehozás(string holvan, string ABjelszó)
+    private static SqliteConnection KapcsolatLétrehozás(string holvan, string ABjelszó)
     {
-        return new SQLiteConnection($"Data Source={holvan};Version=3;Password={ABjelszó};");
+        return new SqliteConnection($"Data Source={holvan};Password={ABjelszó};");
     }
 
     public static void ABMódosítás(string holvan, string ABjelszó, string SQLszöveg)
     {
         try
         {
-            using (SQLiteConnection Kapcsolat = KapcsolatLétrehozás(holvan, ABjelszó))
+            using (SqliteConnection Kapcsolat = KapcsolatLétrehozás(holvan, ABjelszó))
             {
-                using (SQLiteCommand Parancs = new SQLiteCommand(SQLszöveg, Kapcsolat))
+                using (SqliteCommand Parancs = new SqliteCommand(SQLszöveg, Kapcsolat))
                 {
                     Kapcsolat.Open();
                     Parancs.ExecuteNonQuery();
@@ -36,14 +38,14 @@ internal static partial class Adatbázis
     {
         try
         {
-            using (SQLiteConnection Kapcsolat = KapcsolatLétrehozás(holvan, ABjelszó))
+            using (SqliteConnection Kapcsolat = KapcsolatLétrehozás(holvan, ABjelszó))
             {
                 Kapcsolat.Open();
                 using (var tranzakció = Kapcsolat.BeginTransaction())
                 {
                     foreach (string sql in SQLszöveg)
                     {
-                        using (SQLiteCommand Parancs = new SQLiteCommand(sql, Kapcsolat, tranzakció))
+                        using (SqliteCommand Parancs = new SqliteCommand(sql, Kapcsolat, tranzakció))
                         {
                             Parancs.ExecuteNonQuery();
                         }
@@ -69,12 +71,12 @@ internal static partial class Adatbázis
         bool válasz = false;
         try
         {
-            using (SQLiteConnection Kapcsolat = KapcsolatLétrehozás(holvan, ABjelszó))
+            using (SqliteConnection Kapcsolat = KapcsolatLétrehozás(holvan, ABjelszó))
             {
-                using (SQLiteCommand Parancs = new SQLiteCommand(SQLszöveg, Kapcsolat))
+                using (SqliteCommand Parancs = new SqliteCommand(SQLszöveg, Kapcsolat))
                 {
                     Kapcsolat.Open();
-                    using (SQLiteDataReader rekord = Parancs.ExecuteReader())
+                    using (SqliteDataReader rekord = Parancs.ExecuteReader())
                     {
                         if (rekord.Read()) válasz = true;
                     }

@@ -11,7 +11,7 @@ namespace VédőEszköz
 {
     public partial class Ablak_Főoldal
     {
-        readonly Kezelő_Oldalok KézOldal = new Kezelő_Oldalok();
+        readonly Kezelő_Oldalak KézOldal = new Kezelő_Oldalak();
         readonly Kezelő_Jogosultságok KézJog = new Kezelő_Jogosultságok();
         readonly Kezelő_Belépés_Verzió Kéz_Belépés_Verzió = new Kezelő_Belépés_Verzió();
 

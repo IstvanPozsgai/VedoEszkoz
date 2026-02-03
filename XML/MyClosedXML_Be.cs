@@ -143,11 +143,11 @@ namespace VédőEszköz
                 //}
                 //else if (!int.TryParse(Cella.Value.ToString(), out int result))
                 //{
-                //    válasz = Convert.ToDateTime(Cella.Value);
+                //    válasz = Convert.ToÉrt_DaTeTime(Cella.Value);
                 //}
                 //else
                 //{
-                //    válasz = Convert.ToDateTime(Cella.Value);
+                //    válasz = Convert.ToÉrt_DaTeTime(Cella.Value);
                 //}
                 IXLWorksheet lap = xlWorkBook.Worksheet(munkalapnév);
                 string Cella = lap.Cell(honnan).Value.ToStrTrim();
@@ -157,7 +157,7 @@ namespace VédőEszköz
 
                 //        if (Cella is double szám) return DateTime.FromOADate(szám);
 
-                return Convert.ToDateTime(Cella);
+                return Cella.ToÉrt_DaTeTime();
             }
             catch (Exception ex)
             {

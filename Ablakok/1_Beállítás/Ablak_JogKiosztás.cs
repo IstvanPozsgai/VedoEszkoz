@@ -10,7 +10,7 @@ namespace VédőEszköz
 
     public partial class Ablak_JogKiosztás : Form
     {
-        readonly Kezelő_Oldalok KézOldal = new Kezelő_Oldalok();
+        readonly Kezelő_Oldalak KézOldal = new Kezelő_Oldalak();
         readonly Kezelő_Gombok KézGombok = new Kezelő_Gombok();
         readonly Kezelő_Kiegészítő_Könyvtár KézSzervezet = new Kezelő_Kiegészítő_Könyvtár();
         readonly Kezelő_Users KézUsers = new Kezelő_Users();

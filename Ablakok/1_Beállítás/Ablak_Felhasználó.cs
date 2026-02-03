@@ -452,7 +452,7 @@ namespace VédőEszköz
                 if (TxtPassword.Text.Trim() == "") TxtPassword.Text = "123456";
                 string jelszó = Jelszó.HashPassword(TxtPassword.Text.Trim());
                 Adat_Users adat = new Adat_Users(Id, jelszó, true);
-                Kéz.MódosításJeszó(adat);
+                Kéz.MódosításJelszó(adat);
                 MessageBox.Show("A jeszó módosítása befejeződött!", "Figyelmeztetés", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (HibásBevittAdat ex)

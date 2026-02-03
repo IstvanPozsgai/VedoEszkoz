@@ -10,7 +10,7 @@ namespace VédőEszköz
 {
     public partial class Ablak_Formok : Form
     {
-        readonly Kezelő_Oldalok Kéz = new Kezelő_Oldalok();
+        readonly Kezelő_Oldalak Kéz = new Kezelő_Oldalak();
 #pragma warning disable IDE0044
         DataTable AdatTáblaALap = new DataTable();
 #pragma warning restore IDE0044
